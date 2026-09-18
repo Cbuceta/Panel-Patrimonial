@@ -1528,6 +1528,7 @@ function readQuotaSheet(workbook, sheetMatcher, sheetLabel, labelFn){
     else if(h.includes('N') && h.includes('CUOTA')) col.ncuota=c;
     else if(h.includes('TOTAL')) col.total=c;
     else if(h.includes('CANCELADO')) col.cancelado=c;
+    else if(h==='ESTADO') col.estado=c;
   }
   const amountCol = col.total!==undefined ? col.total : col.cuota;
   if(col.empresa===undefined || amountCol===undefined) throw new Error('No encontré las columnas esperadas (EMPRESA/CUOTA-TOTAL) en "'+sheetName+'".');
@@ -1539,6 +1540,10 @@ function readQuotaSheet(workbook, sheetMatcher, sheetLabel, labelFn){
     const empresa = normEmpresa(eCell ? eCell.v : null);
     if(!empresa) continue;
     const g = (c)=> (c===undefined) ? null : (ws[XLSX.utils.encode_cell({r,c})]||{}).v;
+    // "Estado" es a nivel del plan completo (Vigente / Cancelado-caduco), distinto de si ESTA cuota puntual
+    // ya se pagó. Si el plan entero está caduco/cancelado, ninguna de sus cuotas cuenta como deuda real.
+    const estado = String(g(col.estado) || '').trim().toUpperCase();
+    if(estado && estado!=='VIGENTE') continue;
     const vencRaw = g(col.venc);
     const venc = (vencRaw instanceof Date) ? vencRaw : null;
     const fpRaw = g(col.fechaPago);
@@ -1605,6 +1610,7 @@ function parseDeudasArcaSheet(workbook, monthKeys){
     else if(t==='INTRESARCITORIO') col.intres=c;
     else if(t==='INTPUNITORIO') col.intpun=c;
     else if(t==='TOTAL') col.total=c;
+    else if(t==='CANCELADO') col.cancelado=c;
   }
   if(col.empresa===undefined || col.total===undefined) throw new Error('No encontré las columnas esperadas (EMPRESA/TOTAL) en "'+sheetName+'".');
 
@@ -1614,6 +1620,8 @@ function parseDeudasArcaSheet(workbook, monthKeys){
     const empresa = normEmpresa(eCell ? eCell.v : null);
     if(!empresa) continue;
     const g = (c)=> (c===undefined) ? null : (ws[XLSX.utils.encode_cell({r,c})]||{}).v;
+    const cancelado = String(g(col.cancelado) || '').trim().toUpperCase();
+    if(cancelado==='SI') continue; // ya pagada, no es deuda pendiente
     const vencRaw = g(col.venc);
     const venc = (vencRaw instanceof Date) ? vencRaw : null;
     const saldo = Number(g(col.saldo)) || 0;
