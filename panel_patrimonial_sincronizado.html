@@ -587,7 +587,12 @@ function computeTotals(values){
   const liquidez = totPasCte ? totActCte/totPasCte : NaN;
   const pruebaAcida = totPasCte ? (totActCte-stock)/totPasCte : NaN;
   const endeudamiento = patrimonioNeto ? totPasivo/patrimonioNeto : NaN;
-  return {totActCte,totActNoCte,totActivo,totPasCte,totPasNoCte,totPasivo,patrimonioNeto,liquidez,pruebaAcida,endeudamiento};
+  const solvencia = totPasivo ? totActivo/totPasivo : NaN;
+  const coberturaPasPatrimonio = totPasivo ? patrimonioNeto/totPasivo : NaN;
+  const pctPasCte = totPasivo ? totPasCte/totPasivo : NaN;
+  const pctPasNoCte = totPasivo ? totPasNoCte/totPasivo : NaN;
+  const capitalTrabajo = totActCte - totPasCte;
+  return {totActCte,totActNoCte,totActivo,totPasCte,totPasNoCte,totPasivo,patrimonioNeto,liquidez,pruebaAcida,endeudamiento,solvencia,coberturaPasPatrimonio,pctPasCte,pctPasNoCte,capitalTrabajo};
 }
 
 function rubroLabelCell(f, readonly, sourceTag){
@@ -657,13 +662,26 @@ async function renderGrid(monthsOverride){
     return `<tr class="rubro-row">${rubroLabelCell(f, readonly, sourceTag)}${cells}</tr>`;
   }
 
-  function totalRow(label, key, grand){
-    const cells = visibleMonths.map(m=>`<td class="numcell ${(!readonly&&monthData[m].frozen)?'frozen-cell':''}">${fmtMoney(totalsByMonth[m][key])}</td>`).join('');
-    return `<tr class="total-row ${grand?'grand':''}"><td class="rubro-cell">${label}</td>${cells}</tr>`;
+  function labelCell(label, formula){
+    return formula
+      ? `<td class="rubro-cell"><span title="${formula}" style="border-bottom:1px dotted var(--text3);cursor:help">${label}</span></td>`
+      : `<td class="rubro-cell">${label}</td>`;
   }
-  function ratioRow(label, key){
+  function totalRow(label, key, grand, formula){
+    const cells = visibleMonths.map(m=>`<td class="numcell ${(!readonly&&monthData[m].frozen)?'frozen-cell':''}">${fmtMoney(totalsByMonth[m][key])}</td>`).join('');
+    return `<tr class="total-row ${grand?'grand':''}">${labelCell(label, formula)}${cells}</tr>`;
+  }
+  function ratioRow(label, key, formula){
     const cells = visibleMonths.map(m=>`<td class="numcell ${(!readonly&&monthData[m].frozen)?'frozen-cell':''}">${fmtRatio(totalsByMonth[m][key])}</td>`).join('');
-    return `<tr class="ratio-row"><td class="rubro-cell">${label}</td>${cells}</tr>`;
+    return `<tr class="ratio-row">${labelCell(label, formula)}${cells}</tr>`;
+  }
+  function pctRow(label, key, formula){
+    const cells = visibleMonths.map(m=>{
+      const v = totalsByMonth[m][key];
+      const txt = isFinite(v) ? (v*100).toFixed(1)+'%' : '—';
+      return `<td class="numcell ${(!readonly&&monthData[m].frozen)?'frozen-cell':''}">${txt}</td>`;
+    }).join('');
+    return `<tr class="ratio-row">${labelCell(label, formula)}${cells}</tr>`;
   }
   function sectionHd(label){
     return `<tr class="section-hd"><td colspan="${visibleMonths.length+1}">${label}</td></tr>`;
@@ -720,9 +738,14 @@ async function renderGrid(monthsOverride){
     totalRow('Total Pasivo','totPasivo',true),
     totalRow('Patrimonio Neto','patrimonioNeto',true),
     sectionHd('Ratios'),
-    ratioRow('Liquidez Corriente','liquidez'),
-    ratioRow('Prueba Ácida','pruebaAcida'),
-    ratioRow('Endeudamiento','endeudamiento'),
+    ratioRow('Liquidez Corriente','liquidez', 'AC / PC'),
+    ratioRow('Prueba Ácida','pruebaAcida', '(AC − Bienes de Cambio) / PC'),
+    ratioRow('Endeudamiento','endeudamiento', 'Pasivo Total / Patrimonio Neto'),
+    ratioRow('Solvencia','solvencia', 'Activo Total / Pasivo Total'),
+    ratioRow('Cobertura del Pasivo con Patrimonio','coberturaPasPatrimonio', 'Patrimonio Neto / Pasivo Total'),
+    pctRow('% Pasivo Corriente s/ Pasivo Total','pctPasCte', 'PC / Pasivo Total'),
+    pctRow('% Pasivo No Corriente s/ Pasivo Total','pctPasNoCte', 'PNC / Pasivo Total'),
+    totalRow('Capital de Trabajo','capitalTrabajo', false, 'AC − PC'),
     commentsToggleRow(),
     commentsRow()
   ].join('');
@@ -1277,6 +1300,7 @@ async function fetchPanelTable(table){
   const pageSize = 1000;
   let all = [];
   let from = 0;
+  let lastStatus = null;
   while(true){
     const res = await fetch(`${SUPA.url}/rest/v1/${table}?select=*`, {
       headers:{
@@ -1284,6 +1308,7 @@ async function fetchPanelTable(table){
         Range: `${from}-${from+pageSize-1}`
       }
     });
+    lastStatus = res.status;
     if(!res.ok && res.status!==206) throw new Error(`HTTP ${res.status} al consultar "${table}"`);
     const page = await res.json();
     all = all.concat(page);
@@ -1291,6 +1316,19 @@ async function fetchPanelTable(table){
     from += pageSize;
     if(from > 50000) break; // salvavidas por si algo sale mal
   }
+  // Si con paginación no trajo nada, reintento con la consulta simple (igual a la que usa el panel
+  // propio), por si el header Range es el que está causando el problema en esta tabla puntual.
+  if(all.length===0){
+    const res2 = await fetch(`${SUPA.url}/rest/v1/${table}?select=*`, {
+      headers:{apikey:SUPA.key, Authorization:`Bearer ${SUPA.key}`}
+    });
+    lastStatus = res2.status;
+    if(res2.ok){
+      const plain = await res2.json();
+      if(Array.isArray(plain) && plain.length>0) return plain;
+    }
+  }
+  if(all.length===0) all._diagStatus = lastStatus; // para mostrar en el modal si sigue vacío
   return all;
 }
 function guessNameField(row){
@@ -1306,9 +1344,10 @@ function sumPanelByEmpresa(rows){
   rows.forEach(r=>{
     const d = parseFloat(r.deuda)||0;
     const e = (r.empresa||'').trim().toUpperCase();
-    if(e==='SPL') out.spl += d;
-    else if(e==='SPOTSLINE') out.spotsline += d;
-    else if(e==='AMBAS'){ out.ambas += d; ambasRows.push({nombre: guessNameField(r) || '(sin nombre)', deuda: d}); }
+    // Reconoce variantes como "SPL", "SPL DIST.", "SPL DISTRIBUIDORA", "SPOTSLINE", "SPOTSLINE S.A.", etc.
+    if(e.startsWith('AMBAS')){ out.ambas += d; ambasRows.push({nombre: guessNameField(r) || '(sin nombre)', deuda: d}); }
+    else if(e.startsWith('SPL')) out.spl += d;
+    else if(e.startsWith('SPOTSLINE')) out.spotsline += d;
     else { unmatched.total += d; unmatched.count++; unmatched.labels.add(r.empresa===''||r.empresa==null?'(vacío)':r.empresa); }
   });
   ambasRows.sort((a,b)=> b.deuda - a.deuda);
@@ -1388,8 +1427,11 @@ async function runSync(){
     provLoc.splFinal = provLoc.spl; provLoc.spotslineFinal = provLoc.spotsline;
     syncCtx = {deudores, provLoc};
     const warn = (label, r)=> r.unmatched.count>0 ? `<div class="desc" style="color:var(--orange);margin-top:4px">${label}: ${r.unmatched.count} fila(s) por ${fmtMoney(r.unmatched.total)} con "empresa" que no reconozco (${[...r.unmatched.labels].slice(0,5).join(', ')}) — no están sumadas en ningún lado.</div>` : '';
+    const emptyDiag = (label, rows, r)=> (r.rowCount===0 && rows._diagStatus!==undefined) ? `<div class="desc" style="color:var(--red);margin-top:4px">${label}: trajo 0 filas — código de respuesta HTTP: ${rows._diagStatus}.</div>` : '';
     document.getElementById('syncBody').innerHTML = `
       <div class="desc">Clientes: ${deudores.rowCount} filas traídas · Proveedores: ${provLoc.rowCount} filas traídas.</div>
+      ${emptyDiag('Clientes', clientes, deudores)}
+      ${emptyDiag('Proveedores', proveedores, provLoc)}
       <table style="margin-top:10px">
         <thead><tr><th></th><th>SPL</th><th>Spotsline</th></tr></thead>
         <tbody>
@@ -1790,6 +1832,7 @@ async function exportExcel(monthsOverride){
   const section = (label)=> aoa.push([label]);
   const total = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> Math.round(totalsByMonth[m][key]))]);
   const ratio = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> isFinite(totalsByMonth[m][key])?Number(totalsByMonth[m][key].toFixed(2)):'')]);
+  const pct = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> isFinite(totalsByMonth[m][key])?Number((totalsByMonth[m][key]*100).toFixed(1))+'%':'')]);
 
   section('ACTIVO CORRIENTE'); ACTIVO_CTE.forEach(field); total('Total Activo Corriente','totActCte');
   section('ACTIVO NO CORRIENTE'); ACTIVO_NOCTE.forEach(field); total('Total Activo No Corriente','totActNoCte');
@@ -1800,6 +1843,9 @@ async function exportExcel(monthsOverride){
   total('PATRIMONIO NETO','patrimonioNeto');
   section('RATIOS');
   ratio('Liquidez Corriente','liquidez'); ratio('Prueba Ácida','pruebaAcida'); ratio('Endeudamiento','endeudamiento');
+  ratio('Solvencia','solvencia'); ratio('Cobertura del Pasivo con Patrimonio','coberturaPasPatrimonio');
+  pct('% Pasivo Corriente s/ Pasivo Total','pctPasCte'); pct('% Pasivo No Corriente s/ Pasivo Total','pctPasNoCte');
+  total('Capital de Trabajo','capitalTrabajo');
 
   const ws = XLSX.utils.aoa_to_sheet(aoa);
   ws['!cols'] = [{wch:28}, ...visibleMonths.map(()=>({wch:14}))];
