@@ -223,7 +223,7 @@ const ACTIVO_NOCTE = [
 const PASIVO_CTE = [
   {id:'cheques_emitidos', label:'Cheques emitidos', tag:'archivo', note:'Cash Flow · hoja Ch Propios'},
   {id:'oblig_impositivas', label:'Obligaciones Impositivas', tag:'archivo', note:'Cash Flow · hoja Deudas ARCA'},
-  {id:'proveedores_ext', label:'Proveedores Exterior', tag:'archivo', note:'En USD · convertido con Tipo de Cambio'},
+  {id:'proveedores_ext', label:'Proveedores Exterior', tag:'archivo', note:'Cash Flow · hoja DEUDA EXT (Saldo AR$)'},
   {id:'proveedores_loc', label:'Proveedores Locales', tag:'panel', note:'Panel de Proveedores (Supabase, en vivo)'},
   {id:'deudas_fiscales_cte', label:'Deudas fiscales AFIP', tag:'archivo', note:'Cash Flow · hoja Deudas ARCA'},
   {id:'deudas_bancarias_cte', label:'Deudas bancarias', tag:'archivo', note:'Cash Flow · hoja Créditos Bancarios'},
@@ -241,7 +241,7 @@ const PASIVO_NOCTE = [
 ];
 const ALL_FIELDS = [...ACTIVO_CTE, ...ACTIVO_NOCTE, ...PASIVO_CTE, ...PASIVO_NOCTE];
 const FILE_FIELDS = new Set(['producto_terminado','materia_prima']);
-const DRILL_FIELDS = new Set(['oblig_impositivas','deudas_fiscales_cte','deudas_fiscales_nocte','deudas_bancarias_cte','deudas_bancarias_nocte','sueldos','desvinculaciones_cte','desvinculaciones_nocte','otras_deudas_cte','otras_deudas_nocte']); // tienen detalle desplegable
+const DRILL_FIELDS = new Set(['oblig_impositivas','deudas_fiscales_cte','deudas_fiscales_nocte','deudas_bancarias_cte','deudas_bancarias_nocte','sueldos','desvinculaciones_cte','desvinculaciones_nocte','otras_deudas_cte','otras_deudas_nocte','proveedores_ext']); // tienen detalle desplegable
 let lastMonthData = null; // referencia al último render, para abrir el detalle
 
 /* ============ SEED DATA (reconstruido desde tus archivos) ============ */
@@ -273,15 +273,11 @@ const SEED_USD = { // Moneda Extranjera, en dólares, tal como está en la hoja 
   spotsline: { 5:37522.87, 6:31454.16, 7:75998.81, 8:65952.43 },
   spl:       { 5:6900.00,  6:6900.00,  7:6900.00,  8:6900.00  }
 };
-// Dólares Comex y Proveedores Exterior: en USD, confirmados a mano. Comex es la foto de set-2026;
-// Proveedores Exterior se repite igual desde junio (no tenemos series históricas distintas por mes).
+// Dólares Comex: en USD, confirmado a mano (foto de set-2026).
 const SEED_USD_COMEX = { spotsline: { 8:106070 }, spl: { 8:94775 } };
-const SEED_USD_PROVEXT = {
-  spotsline: { 5:142444, 6:142444, 7:142444, 8:142444 },
-  spl:       { 5:308847, 6:308847, 7:308847, 8:308847 }
-};
 // Campos que están en dólares y se convierten a pesos con el Tipo de Cambio Oficial (BNA) del mes.
-const USD_FIELDS = { moneda_extranjera: SEED_USD, dolares_comex: SEED_USD_COMEX, proveedores_ext: SEED_USD_PROVEXT };
+// (Proveedores Exterior salió de acá: ahora viene ya en pesos desde la hoja "DEUDA EXT" del Cash Flow.)
+const USD_FIELDS = { moneda_extranjera: SEED_USD, dolares_comex: SEED_USD_COMEX };
 // Tipo de Cambio Oficial (BNA), fin de cada mes -> de tu hoja "COT. DOLAR". No hay dato cargado ahí
 // para 2026 (se corta en nov-2025) ni para dos fechas intermedias de 2024 que eran ambiguas -> esos
 // meses quedan sin cotización de referencia hasta que los cargues a mano o traigas la de hoy.
@@ -961,7 +957,7 @@ const METODOLOGIA = [
     ['Desvinculaciones (Corriente / No Corriente)', 'Se importa junto con todo lo demás (hoja "Desvinculaciones"): son cuotas de indemnizaciones a ex-empleados. Para cada mes, quedan las cuotas cuya Fecha de Pago es posterior al cierre de ese mes (todavía no pagadas a esa fecha), separadas en Corriente/No Corriente según si el Vencimiento cae dentro de los 12 meses siguientes a ESE mes. Detalle desplegable con la lupa 🔎.'],
     ['Deudas bancarias (Corriente / No Corriente)', 'Se importa junto con todo lo demás (hoja "Créditos Bancarios"): excluye filas que no son de SPL/Spotsline (ej. préstamos a nombre de una persona). Capital = Capital, Intereses = Int. Financiero + Int. Resarcitorio, Total = Cuota. Para cada mes, quedan las cuotas con Fecha de Pago posterior al cierre de ese mes, separadas en Corriente/No Corriente por Vencimiento (12 meses desde ese mismo mes). Se recalcula mes a mes, no es una foto única. Detalle desplegable con la lupa 🔎.'],
     ['Proveedores Locales', 'Se consulta en vivo el panel de Proveedores (tabla "proveedores" en Supabase) al apretar "Sincronizar Paneles": suma el campo deuda de las filas de la empresa correspondiente más las marcadas "Ambas".'],
-    ['Proveedores Exterior', 'Monto en dólares confirmado a mano (foto set-2026). Se convierte a pesos multiplicando por el Tipo de Cambio del mes.'],
+    ['Proveedores Exterior', 'Se importa junto con todo lo demás (hoja "DEUDA EXT"): ya viene en pesos (columna Saldo AR$, calculada con el TC que corresponde a cada cuota), no se re-convierte con la fila de Tipo de Cambio del dashboard. Para cada mes, queda lo que tiene Fecha de Pago desde el inicio de ese mes en adelante (todavía no pagado). Detalle desplegable con la lupa 🔎 (incluye proveedor, factura y monto original en USD).'],
     ['Obligaciones Impositivas', 'Se importa junto con todo lo demás al apretar "Importar Cash Flow" (hoja "Deudas ARCA"): Capital = Saldo, Intereses = IntResarcitorio + IntPunitorio. Como esta hoja no tiene Fecha de Pago, para cada mes se toma como "todavía pendiente" lo que tiene Vencimiento posterior al cierre de ese mes. Se recalcula mes a mes. Detalle desplegable con la lupa 🔎.'],
     ['Deudas fiscales AFIP (Corriente / No Corriente)', 'Se importa junto con todo lo demás (hoja "Planes ARCA"): son planes de pago en cuotas, cada una con Capital + Interés Financiero + Interés Resarcitorio. Para cada mes, quedan las cuotas con Fecha de Pago posterior al cierre de ese mes (todavía no pagadas a esa fecha), separadas en Corriente/No Corriente según si el Vencimiento cae dentro de los 12 meses siguientes a ESE mismo mes — no a hoy. Se recalcula mes a mes, así que junio, julio y agosto pueden traer números distintos entre sí. Detalle desplegable con la lupa 🔎.'],
     ['Otras deudas (Corriente / No Corriente)', 'Se importa junto con todo lo demás (hoja "Planes de Pago" — planes con Rentas/ARBA y similares, fuera de AFIP/ARCA). Para cada mes, quedan las cuotas con Fecha de Pago posterior al cierre de ese mes, separadas en Corriente/No Corriente por Vencimiento (12 meses desde ese mismo mes). Detalle desplegable con la lupa 🔎.'],
@@ -1129,7 +1125,7 @@ function handleCFFile(e){
   if(!file) return;
   const reader = new FileReader();
   reader.onload = (evt)=>{
-    let parsed, arcaParsed=null, arcaError=null, planesParsed=null, planesError=null, creditosParsed=null, creditosError=null, sueldosParsed=null, sueldosError=null, desvincParsed=null, desvincError=null, otrasParsed=null, otrasError=null;
+    let parsed, arcaParsed=null, arcaError=null, planesParsed=null, planesError=null, creditosParsed=null, creditosError=null, sueldosParsed=null, sueldosError=null, desvincParsed=null, desvincError=null, otrasParsed=null, otrasError=null, deudaExtParsed=null, deudaExtError=null;
     let wb;
     try{
       wb = XLSX.read(evt.target.result, {type:'array', cellDates:true});
@@ -1151,8 +1147,10 @@ function handleCFFile(e){
     catch(err){ desvincError = err.message; }
     try{ otrasParsed = parsePlanesDePagoSheet(wb, monthKeys); }
     catch(err){ otrasError = err.message; }
+    try{ deudaExtParsed = parseDeudaExtSheet(wb, monthKeys); }
+    catch(err){ deudaExtError = err.message; }
 
-    cfImportCtx = {parsed, arcaParsed, planesParsed, creditosParsed, sueldosParsed, desvincParsed, otrasParsed, filename: file.name};
+    cfImportCtx = {parsed, arcaParsed, planesParsed, creditosParsed, sueldosParsed, desvincParsed, otrasParsed, deudaExtParsed, filename: file.name};
     const monthsSorted = monthKeys.slice().sort((a,b)=> a.year-b.year || a.month-b.month);
     const rowsHtml = monthsSorted.map(mk=>{
       const spl = (parsed.results.spl[mk.year]||{})[mk.month] || {};
@@ -1199,9 +1197,10 @@ function handleCFFile(e){
     const desvincHtml = debtPreview('Desvinculaciones', desvincParsed, desvincError, 'Desvinculaciones', true, sumTotal);
     const otrasHtml = debtPreview('Otras deudas', otrasParsed, otrasError, 'Planes de Pago', true, sumTotal);
     const sueldosHtml = debtPreview('Sueldos y Jornales (solo lo devengado de cada mes)', sueldosParsed, sueldosError, 'Sueldos y CCSS', false, sumTotal);
+    const deudaExtHtml = debtPreview('Proveedores Exterior', deudaExtParsed, deudaExtError, 'DEUDA EXT', false, sumTotal);
 
     document.getElementById('cfBody').innerHTML = `
-      <div class="desc">Hoja usada: <b>${parsed.sheetName}</b>${parsed.chPropiosSheet?` + <b>${parsed.chPropiosSheet}</b> (cheques emitidos)`:' · no encontré la hoja "Ch Propios", ese rubro no se va a actualizar'} · ${monthsSorted.length} meses encontrados. Esto va a reemplazar todos estos rubros, mes a mes, para las dos empresas (salvo Obligaciones Impositivas, que es puntual — ver abajo). Moneda Extranjera queda en <b>dólares</b> — se convierte a pesos con la fila de Tipo de Cambio. Las hojas de deuda en cuotas se recalculan para cada mes tomando lo que queda "de ese mes en adelante" (Fecha de Pago desde el inicio del mes), con Corriente/No Corriente según si el Vencimiento cae dentro de los 12 meses siguientes a ese mismo mes.</div>
+      <div class="desc">Hoja usada: <b>${parsed.sheetName}</b>${parsed.chPropiosSheet?` + <b>${parsed.chPropiosSheet}</b> (cheques emitidos)`:' · no encontré la hoja "Ch Propios", ese rubro no se va a actualizar'} · ${monthsSorted.length} meses encontrados. Esto va a reemplazar todos estos rubros, mes a mes, para las dos empresas (salvo Obligaciones Impositivas, que es puntual — ver abajo). Moneda Extranjera queda en <b>dólares</b> — se convierte a pesos con la fila de Tipo de Cambio. Proveedores Exterior ya viene en pesos (Saldo AR$). Las hojas de deuda en cuotas se recalculan para cada mes tomando lo que queda "de ese mes en adelante" (Fecha de Pago desde el inicio del mes), con Corriente/No Corriente según si el Vencimiento cae dentro de los 12 meses siguientes a ese mismo mes.</div>
       <table><thead><tr><th>Mes</th><th colspan="4">SPL</th><th colspan="4">Spotsline</th></tr>
       <tr><th></th><th>Caja/Bancos</th><th>Valores cart.</th><th>Mon.Extr.(USD)</th><th>Cheq.Emit.</th><th>Caja/Bancos</th><th>Valores cart.</th><th>Mon.Extr.(USD)</th><th>Cheq.Emit.</th></tr></thead>
       <tbody>${rowsHtml}</tbody></table>
@@ -1211,6 +1210,7 @@ function handleCFFile(e){
       ${sueldosHtml}
       ${desvincHtml}
       ${otrasHtml}
+      ${deudaExtHtml}
       <div class="modal-actions">
         <button class="btn" id="cancelCF">Cancelar</button>
         <button class="btn primary" id="confirmCF">Aplicar todo</button>
@@ -1222,7 +1222,7 @@ function handleCFFile(e){
 }
 
 async function confirmCFImport(){
-  const {parsed, arcaParsed, planesParsed, creditosParsed, sueldosParsed, desvincParsed, otrasParsed, filename} = cfImportCtx;
+  const {parsed, arcaParsed, planesParsed, creditosParsed, sueldosParsed, desvincParsed, otrasParsed, deudaExtParsed, filename} = cfImportCtx;
   const monthKeys = parsed.monthKeys;
   const skippedFrozen = [];
   for(const entity of ['spl','spotsline']){
@@ -1280,6 +1280,11 @@ async function confirmCFImport(){
         d.values.otras_deudas_nocte = b.nocte.reduce((a,i)=>a+i.total,0);
         d.meta.otras_deudas_cte = {source:'archivo', filename, updatedAt:new Date().toISOString(), items:b.cte};
         d.meta.otras_deudas_nocte = {source:'archivo', filename, updatedAt:new Date().toISOString(), items:b.nocte};
+      }
+      if(deudaExtParsed){
+        const items = deudaExtParsed.results[entity][year][month];
+        d.values.proveedores_ext = items.reduce((a,i)=>a+i.total,0);
+        d.meta.proveedores_ext = {source:'archivo', filename, updatedAt:new Date().toISOString(), items};
       }
       await savePeriod(entity, year, month, d);
     }
@@ -1724,6 +1729,65 @@ function parseSueldosSheet(workbook, monthKeys){
       results[e][mk.year] = results[e][mk.year] || {};
       const items = rows.filter(row=> row.empresa===e && row.mesDeveng && row.mesDeveng.getFullYear()===mk.year && row.mesDeveng.getMonth()===mk.month);
       results[e][mk.year][mk.month] = items.map(i=>({...i, saldo:i.importe, intereses:0, total:i.importe, vencimiento:i.mesDeveng}));
+    });
+  });
+  return {sheetName, results};
+}
+
+/* ============ IMPORTAR DEUDA EXT (Proveedores Exterior, ya en pesos, mes a mes) ============ */
+function parseDeudaExtSheet(workbook, monthKeys){
+  const sheetName = workbook.SheetNames.find(n=>/deuda/i.test(n) && /ext/i.test(n));
+  if(!sheetName) throw new Error('No encontré una hoja "DEUDA EXT" en este archivo.');
+  const ws = workbook.Sheets[sheetName];
+  const range = XLSX.utils.decode_range(ws['!ref']);
+  let headerRow=-1;
+  for(let r=range.s.r; r<=range.e.r; r++){
+    const cell = ws[XLSX.utils.encode_cell({r, c:range.s.c})];
+    if(cell && normalizeHeader(cell.v)==='EMPRESA'){ headerRow=r; break; }
+  }
+  if(headerRow===-1) throw new Error('No encontré la fila de encabezado (EMPRESA) en la hoja "'+sheetName+'".');
+  const col = {};
+  for(let c=range.s.c; c<=range.e.c; c++){
+    const cell = ws[XLSX.utils.encode_cell({r:headerRow,c})];
+    if(!cell || cell.v===undefined || cell.v===null) continue;
+    const h = normalizeHeader(cell.v);
+    if(h==='EMPRESA') col.empresa=c;
+    else if(h==='FACTURA') col.factura=c;
+    else if(h==='PROVEEDOR') col.proveedor=c;
+    else if(h.includes('VENCIMIENTO')) col.venc=c;
+    else if(h.includes('PAGO')) col.fechaPago=c;
+    else if(h.includes('MONTO') && h.includes('USD')) col.montoUsd=c;
+    else if(h==='TC') col.tc=c;
+    else if(h.includes('SALDO') && h.includes('AR')) col.saldoArs=c;
+  }
+  if(col.empresa===undefined || col.saldoArs===undefined) throw new Error('No encontré las columnas esperadas (EMPRESA/SALDO AR$) en "'+sheetName+'".');
+
+  const rows = [];
+  for(let r=headerRow+1; r<=range.e.r; r++){
+    const eCell = ws[XLSX.utils.encode_cell({r,c:col.empresa})];
+    const empresa = normEmpresa(eCell ? eCell.v : null);
+    if(!empresa) continue;
+    const g = (c)=> (c===undefined) ? null : (ws[XLSX.utils.encode_cell({r,c})]||{}).v;
+    const vencRaw = g(col.venc);
+    const venc = (vencRaw instanceof Date) ? vencRaw : null;
+    const fpRaw = g(col.fechaPago);
+    const fechaPago = (fpRaw instanceof Date) ? fpRaw : null;
+    const saldoArs = Number(g(col.saldoArs)) || 0;
+    const montoUsd = Number(g(col.montoUsd)) || 0;
+    if(!saldoArs) continue;
+    rows.push({
+      empresa, venc, fechaPago, saldo:0, intereses:0, total:saldoArs,
+      impuesto: g(col.proveedor)||'', concepto: `Fact. ${g(col.factura)||''} · US$${montoUsd.toLocaleString('es-AR')}`
+    });
+  }
+  const results = {spl:{}, spotsline:{}};
+  ['spl','spotsline'].forEach(e=>{
+    monthKeys.forEach(mk=>{
+      results[e][mk.year] = results[e][mk.year] || {};
+      const cutoff = monthStartCutoff(mk);
+      // "de ese mes en adelante": todavía no pagada al inicio de ese mes
+      const items = rows.filter(row=> row.empresa===e && (row.fechaPago ? row.fechaPago >= cutoff : true));
+      results[e][mk.year][mk.month] = items;
     });
   });
   return {sheetName, results};
