@@ -905,8 +905,14 @@ function handleFile(e){
     const updatePreview = ()=>{
       const col = colSel.value;
       const total = rows.reduce((acc,r)=>{
-        const raw = String(r[col]||'').replace(/\./g,'').replace(',','.');
-        const n = parseFloat(raw);
+        const raw = r[col];
+        let n;
+        if(typeof raw === 'number'){
+          n = raw; // ya es un número real (típico cuando viene de un .xlsx) -> no tocar
+        } else {
+          const cleaned = String(raw||'').trim().replace(/\./g,'').replace(',','.');
+          n = parseFloat(cleaned);
+        }
         return acc + (isNaN(n)?0:n);
       },0);
       document.getElementById('previewTotal').textContent = 'Total = ' + fmtMoney(total);
