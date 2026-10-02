@@ -80,7 +80,7 @@ table.grid input.val-input.warn{border-color:var(--orange)}
 .comment-cell{vertical-align:top;padding:6px!important}
 .comment-input{width:180px;min-width:150px;background:var(--bg3);border:1px solid var(--border2);border-radius:6px;color:var(--text);font-family:var(--sans);font-size:11.5px;padding:6px;resize:vertical}
 .comment-input:focus{outline:none;border-color:var(--yellow)}
-.comment-view{width:180px;min-width:150px;font-size:11.5px;color:var(--text2);white-space:pre-wrap;line-height:1.4}
+.comment-view{width:220px;min-width:180px;font-size:11.5px;color:var(--text2);white-space:pre-wrap;line-height:1.4}
 tr.comments-toggle-row td{background:var(--bg3)}
 tr.comments-toggle-row:hover td{background:var(--bg4)}
 .mini-upload{background:var(--bg4);border:1px solid var(--border2);color:var(--text2);border-radius:5px;width:22px;height:22px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:12px}
@@ -591,6 +591,86 @@ function computeTotals(values){
   return {totActCte,totActNoCte,totActivo,totPasCte,totPasNoCte,totPasivo,patrimonioNeto,liquidez,pruebaAcida,endeudamiento,solvencia,coberturaPasPatrimonio,pctPasCte,pctPasNoCte,capitalTrabajo};
 }
 
+// Pares Corriente/No Corriente del mismo rubro, para detectar reclasificaciones (algo que "pasó" de uno al otro).
+const PAIR_GROUPS = [
+  {label:'Deudas fiscales AFIP', cte:'deudas_fiscales_cte', nocte:'deudas_fiscales_nocte'},
+  {label:'Deudas bancarias', cte:'deudas_bancarias_cte', nocte:'deudas_bancarias_nocte'},
+  {label:'Desvinculaciones', cte:'desvinculaciones_cte', nocte:'desvinculaciones_nocte'},
+  {label:'Otras deudas', cte:'otras_deudas_cte', nocte:'otras_deudas_nocte'}
+];
+const DIFF_NOISE_FLOOR = 10000; // por debajo de esto, no se considera un cambio relevante
+
+function computeDiffSummary(currValues, prevValues, currTotals, prevTotals){
+  const lines = [];
+  const pairFieldIds = new Set();
+  PAIR_GROUPS.forEach(g=>{ pairFieldIds.add(g.cte); pairFieldIds.add(g.nocte); });
+
+  // 1) Patrimonio Neto, si cambió de forma relevante — siempre primero, es el resumen de resumen.
+  if(currTotals && prevTotals){
+    const dPN = currTotals.patrimonioNeto - prevTotals.patrimonioNeto;
+    if(Math.abs(dPN) > DIFF_NOISE_FLOOR){
+      lines.push(`${dPN>0?'📈':'📉'} <b>Patrimonio Neto</b> ${dPN>0?'subió':'bajó'} ${fmtMoney(Math.abs(dPN))} respecto al mes anterior.`);
+    }
+  }
+
+  // 2) Rubros con Corriente/No Corriente: una sola línea por rubro que dice TOTAL (subió/bajó cuánto)
+  //    y, si además hubo un pase entre Corriente y No Corriente, lo agrega aparte bien explícito.
+  PAIR_GROUPS.forEach(g=>{
+    const prevCte = Number(prevValues[g.cte])||0, currCte = Number(currValues[g.cte])||0;
+    const prevNo = Number(prevValues[g.nocte])||0, currNo = Number(currValues[g.nocte])||0;
+    const prevTotal = prevCte+prevNo, currTotal = currCte+currNo;
+    const dTotal = currTotal - prevTotal;
+    const dCte = currCte - prevCte, dNo = currNo - prevNo;
+    const hayReclasif = Math.abs(dCte)>DIFF_NOISE_FLOOR && Math.abs(dNo)>DIFF_NOISE_FLOOR && Math.sign(dCte)!==Math.sign(dNo);
+
+    if(Math.abs(dTotal) <= DIFF_NOISE_FLOOR && !hayReclasif) return; // sin cambios relevantes en este rubro
+
+    let msg = `<b>${g.label}</b>: `;
+    if(prevTotal===0 && currTotal!==0){
+      msg += `se incorporó una deuda nueva de ${fmtMoney(currTotal)}`;
+    } else if(prevTotal!==0 && currTotal===0){
+      msg += `se saldó por completo (antes ${fmtMoney(prevTotal)})`;
+    } else if(Math.abs(dTotal) > DIFF_NOISE_FLOOR){
+      const pct = prevTotal ? ` (${Math.abs(dTotal/prevTotal*100).toFixed(0)}%)` : '';
+      msg += `la deuda total ${dTotal>0?'subió':'bajó'} ${fmtMoney(Math.abs(dTotal))}${pct} — de ${fmtMoney(prevTotal)} a ${fmtMoney(currTotal)}`;
+    } else {
+      msg += `el total se mantuvo en ${fmtMoney(currTotal)}`;
+    }
+    lines.push(`${dTotal>0?'📈':(dTotal<0?'📉':'➡️')} ${msg}.`);
+
+    if(hayReclasif){
+      const moved = Math.min(Math.abs(dCte), Math.abs(dNo));
+      lines.push(dCte>0
+        ? `&nbsp;&nbsp;🔁 De eso, ${fmtMoney(moved)} pasaron de <b>No Corriente a Corriente</b> (vence antes).`
+        : `&nbsp;&nbsp;🔁 De eso, ${fmtMoney(moved)} pasaron de <b>Corriente a No Corriente</b> (se extendió el plazo).`);
+    }
+  });
+
+  // 3) Resto de los rubros (sin Cte/No Cte), los cambios más grandes: altas, bajas, nuevas deudas, saldadas.
+  const deltas = [];
+  ALL_FIELDS.forEach(f=>{
+    if(pairFieldIds.has(f.id)) return; // esos ya se cubrieron arriba, agrupados por rubro
+    const prev = Number(prevValues[f.id])||0;
+    const curr = Number(currValues[f.id])||0;
+    const delta = curr - prev;
+    if(Math.abs(delta) < DIFF_NOISE_FLOOR) return;
+    deltas.push({f, prev, curr, delta});
+  });
+  deltas.sort((a,b)=> Math.abs(b.delta) - Math.abs(a.delta));
+  deltas.slice(0,8).forEach(d=>{
+    if(d.prev===0 && d.curr!==0){
+      lines.push(`🆕 Se incorporó <b>${d.f.label}</b>: ${fmtMoney(d.curr)}.`);
+    } else if(d.prev!==0 && d.curr===0){
+      lines.push(`✅ Se saldó/eliminó <b>${d.f.label}</b> (antes ${fmtMoney(d.prev)}).`);
+    } else {
+      const pct = d.prev ? ` (${Math.abs(d.delta/d.prev*100).toFixed(0)}%)` : '';
+      lines.push(`${d.delta>0?'📈':'📉'} <b>${d.f.label}</b> ${d.delta>0?'subió':'bajó'} ${fmtMoney(Math.abs(d.delta))}${pct}.`);
+    }
+  });
+
+  return lines;
+}
+
 function rubroLabelCell(f, readonly, sourceTag){
   const showUpload = FILE_FIELDS.has(f.id) && !readonly;
   return `<td class="rubro-cell">
@@ -625,6 +705,20 @@ async function renderGrid(monthsOverride){
   visibleMonths.forEach(m=> totalsByMonth[m] = computeTotals(monthData[m].values));
   lastMonthData = monthData;
   const firstM = visibleMonths[0];
+
+  // Resumen automático: compara cada mes contra el anterior (aunque no esté visible) y arma los cambios relevantes.
+  const summaryTexts = {};
+  for(const m of visibleMonths){
+    const prevKey = m===0 ? {year: state.year-1, month: 11} : {year: state.year, month: m-1};
+    let prevData;
+    if(prevKey.year===state.year && monthData[prevKey.month]){
+      prevData = monthData[prevKey.month];
+    } else {
+      prevData = readonly ? await effectiveMonthDataConjunto(prevKey.year, prevKey.month) : await effectiveMonthData(state.entity, prevKey.year, prevKey.month);
+    }
+    const prevTotals = computeTotals(prevData.values);
+    summaryTexts[m] = computeDiffSummary(monthData[m].values, prevData.values, totalsByMonth[m], prevTotals);
+  }
 
   const headRow = `<tr><th class="rubro-hd">Rubro</th>${visibleMonths.map(m=>{
     if(readonly) return `<th>${MESES[m].slice(0,3)}</th>`;
@@ -703,6 +797,17 @@ async function renderGrid(monthsOverride){
   function commentsToggleRow(){
     return `<tr class="rubro-row comments-toggle-row" id="commentsToggleRow" style="cursor:pointer"><td class="rubro-cell" colspan="${visibleMonths.length+1}"><div class="rubro-lbl-row"><div class="nm"><span style="font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--yellow)">${commentsExpanded?'▾':'▸'} Comentarios / Análisis del mes</span></div></div></td></tr>`;
   }
+  function autoSummaryRow(){
+    if(!commentsExpanded) return '';
+    const cells = visibleMonths.map(m=>{
+      const lines = summaryTexts[m] || [];
+      const html = lines.length
+        ? `<ul style="margin:0;padding-left:16px">${lines.map(l=>`<li style="margin-bottom:4px">${l}</li>`).join('')}</ul>`
+        : `<span style="color:var(--text3)">Sin cambios relevantes vs. el mes anterior.</span>`;
+      return `<td class="comment-cell"><div class="comment-view">${html}</div></td>`;
+    }).join('');
+    return `<tr class="rubro-row comments-data-row"><td class="rubro-cell" style="vertical-align:top">Resumen automático <span style="color:var(--text3);font-weight:400">(vs. mes anterior)</span></td>${cells}</tr>`;
+  }
   function commentsRow(){
     if(!commentsExpanded) return '';
     const cells = visibleMonths.map(m=>{
@@ -743,6 +848,7 @@ async function renderGrid(monthsOverride){
     pctRow('% Pasivo No Corriente s/ Pasivo Total','pctPasNoCte', 'PNC / Pasivo Total'),
     totalRow('Capital de Trabajo','capitalTrabajo', false, 'AC − PC'),
     commentsToggleRow(),
+    autoSummaryRow(),
     commentsRow()
   ].join('');
 
