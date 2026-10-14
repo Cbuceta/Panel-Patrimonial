@@ -266,7 +266,7 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
 <div class="header">
   <div class="eyebrow"><span class="pulse"></span> SPL / SPOTSLINE · SISTEMAS DE GESTIÓN</div>
   <h1>Situación Patrimonial</h1>
-  <div class="sub">Activo, Pasivo y ratios, mes a mes y por empresa. Los datos se guardan en este navegador.</div>
+  <div class="sub">Activo, Pasivo y ratios, mes a mes y por empresa. <span id="sync-status" style="opacity:.8"></span></div>
 </div>
 
 <div class="main">
@@ -459,26 +459,92 @@ let cache = {}; // key -> {values:{}, meta:{}}
 
 function periodKey(entity, year, month){ return `sitpat:${entity}:${year}:${month}`; }
 
-/* ============ ALMACENAMIENTO: localStorage del navegador (persiste de verdad al abrir el archivo suelto) ============ */
-const LS_PREFIX = 'sitpat_ls:';
+/* ============ ALMACENAMIENTO: Supabase compartido (todo el equipo ve lo mismo,
+   y además alimenta el resumen que lee el Panel General) ============ */
+const SUPABASE_URL = 'https://ozbynorwhkmevjmftpmy.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_sBhFezk4bg0OPbSGG59jwA_bt1I1kpp';
+const SUPABASE_TABLE = 'patrimonial';
+const SUPABASE_ROW_ID = 'datos_v1';
+
+let remoteCache = {}; // key -> valor JSON (string), igual a lo que guardaba localStorage
+let remoteLoaded = false;
+let remoteLoadPromise = null;
+async function ensureRemoteLoaded(){
+  if(remoteLoaded) return;
+  if(!remoteLoadPromise){
+    remoteLoadPromise = (async ()=>{
+      try{
+        const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=valor`, {
+          headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY }
+        });
+        if(res.ok){
+          const rows = await res.json();
+          const v = rows && rows[0] ? rows[0].valor : null;
+          if(v && v.datos) remoteCache = v.datos;
+        }
+      }catch(e){ console.error('Error cargando datos patrimoniales compartidos:', e); }
+      remoteLoaded = true;
+    })();
+  }
+  return remoteLoadPromise;
+}
+
+async function computeResumenActual(){
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const spl = computeTotals((await effectiveMonthData('spl', year, month)).values);
+  const spotsline = computeTotals((await effectiveMonthData('spotsline', year, month)).values);
+  const todas = computeTotals((await effectiveMonthDataConjunto(year, month)).values);
+  return { anio:year, mes:month, spl, spotsline, todas };
+}
+
+let syncTimer = null;
+function scheduleSyncSupabase(){
+  clearTimeout(syncTimer);
+  syncTimer = setTimeout(syncSupabaseNow, 800);
+}
+async function syncSupabaseNow(){
+  const statusEl = document.getElementById('sync-status');
+  if(statusEl) statusEl.textContent = '⏳ Sincronizando…';
+  try{
+    const resumen = await computeResumenActual();
+    const payload = { resumen, datos: remoteCache };
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
+      method:'POST',
+      headers:{
+        'apikey': SUPABASE_KEY,
+        'Authorization': 'Bearer '+SUPABASE_KEY,
+        'Content-Type':'application/json',
+        'Prefer':'resolution=merge-duplicates,return=minimal'
+      },
+      body: JSON.stringify({ id: SUPABASE_ROW_ID, valor: payload, updated_at: new Date().toISOString() })
+    });
+    if(!res.ok){
+      const bodyText = await res.text().catch(()=> '');
+      throw new Error('HTTP '+res.status+' — '+bodyText);
+    }
+    if(statusEl) statusEl.textContent = '✓ Sincronizado con el equipo';
+  }catch(e){
+    console.error('Error sincronizando con Supabase:', e);
+    if(statusEl) statusEl.textContent = '⚠ No se pudo sincronizar';
+  }
+}
+
 const Store = {
   async get(key){
-    try{ const v = localStorage.getItem(LS_PREFIX+key); return v===null ? null : {value:v}; }
-    catch(e){ return null; }
+    await ensureRemoteLoaded();
+    return remoteCache[key]!==undefined ? {value: remoteCache[key]} : null;
   },
   async set(key, value){
-    try{ localStorage.setItem(LS_PREFIX+key, value); return true; }
-    catch(e){ console.error('No se pudo guardar en localStorage', e); return false; }
+    await ensureRemoteLoaded();
+    remoteCache[key] = value;
+    scheduleSyncSupabase();
+    return true;
   },
   async list(prefix){
-    try{
-      const keys = [];
-      for(let i=0;i<localStorage.length;i++){
-        const k = localStorage.key(i);
-        if(k && k.startsWith(LS_PREFIX+prefix)) keys.push(k.slice(LS_PREFIX.length));
-      }
-      return {keys};
-    }catch(e){ return {keys:[]}; }
+    await ensureRemoteLoaded();
+    return { keys: Object.keys(remoteCache).filter(k=>k.startsWith(prefix)) };
   }
 };
 
