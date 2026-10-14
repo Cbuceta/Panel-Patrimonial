@@ -50,10 +50,11 @@ h1{font-size:22px;font-weight:600;letter-spacing:.2px;margin-top:4px;color:var(-
 .legend span{display:inline-flex;align-items:center;gap:5px}
 
 /* grid table */
-.tablewrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);overflow:auto;max-width:100%}
+.tablewrap{background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-lg);width:max-content;min-width:100%}
 table.grid{border-collapse:collapse;font-size:12.5px;white-space:nowrap}
 table.grid th, table.grid td{padding:6px 10px;border-bottom:1px solid var(--border)}
 table.grid thead th{position:sticky;top:0;background:var(--bg2);z-index:2;font-family:var(--mono);font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.04em;text-align:right;font-weight:600;padding-top:10px;padding-bottom:10px}
+table.grid thead th{box-shadow:0 1px 0 var(--border2)}
 table.grid thead th.rubro-hd{text-align:left;position:sticky;left:0;z-index:3;background:var(--bg2)}
 table.grid td.rubro-cell{position:sticky;left:0;background:var(--bg2);z-index:1;text-align:left;min-width:190px;max-width:220px;white-space:normal}
 table.grid tr.section-hd td{padding:10px 10px 4px;font-family:var(--mono);font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;border-bottom:none;background:var(--bg2)}
@@ -107,16 +108,49 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
 .callout{max-width:1180px;margin:0 auto 16px;padding:12px 16px;background:var(--orange-bg);border:1px solid var(--orange);border-radius:var(--radius-lg);font-size:12.5px;color:var(--text2);line-height:1.5}
 .callout b{color:var(--orange)}
 
+/* ============ PEDIDOS DE MEJORA ============ */
+.ped-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.modal .ped-head h3{font-size:18px;margin:0}
+.ped-close{color:var(--text);text-decoration:underline;font-weight:600;cursor:pointer;font-size:13px;background:none;border:none;font-family:var(--sans)}
+.ped-row{display:flex;gap:14px;flex-wrap:wrap;margin:12px 0 2px}
+.ped-field{margin-bottom:10px}
+.ped-field label{display:block;font-size:12px;color:var(--text2);margin-bottom:5px}
+.modal .ped-select{width:170px;margin-bottom:0;padding:9px 10px}
+.ped-textarea{width:100%;min-height:96px;background:var(--bg3);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:var(--sans);font-size:13px;padding:10px 12px;resize:vertical}
+.ped-textarea:focus{outline:none;border-color:var(--yellow)}
+.ped-screen{font-size:12px;color:var(--text3);margin:-2px 0 12px}
+.ped-actions{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.ped-listbox{border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px}
+.ped-tabs{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap}
+.ped-tab{background:var(--bg3);border:1px solid var(--border2);color:var(--text);border-radius:8px;padding:6px 12px;font-size:12.5px;cursor:pointer;font-family:var(--sans)}
+.ped-tab.active{border-color:var(--yellow);color:var(--yellow)}
+.ped-empty{color:var(--text2);font-size:13px;padding:10px 4px}
+.ped-item{border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;background:var(--bg3)}
+.ped-item.cerrado{opacity:.78}
+.ped-item-head{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.ped-id{font-family:var(--mono);font-weight:700;color:var(--yellow)}
+.ped-badge{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:.03em;padding:2px 6px;border-radius:4px;background:var(--bg4);color:var(--text2)}
+.ped-badge.alta{background:var(--red-bg);color:var(--red)}
+.ped-badge.baja{background:var(--blue-bg);color:var(--blue)}
+.ped-badge.error{background:var(--orange-bg);color:var(--orange)}
+.ped-date{font-size:11px;color:var(--text3)}
+.ped-item-actions{margin-left:auto;display:flex;gap:6px}
+.ped-mini{background:var(--bg4);border:1px solid var(--border2);color:var(--text2);border-radius:6px;padding:3px 9px;font-size:11.5px;cursor:pointer;font-family:var(--sans)}
+.ped-mini:hover{color:var(--yellow);border-color:var(--yellow)}
+.ped-item-text{font-size:13px;white-space:pre-wrap;line-height:1.45}
+.ped-item-meta{font-size:11.5px;color:var(--text3);margin-top:6px}
+.ped-note{font-size:12px;color:var(--green);margin-top:6px}
+.ped-result{font-size:12.5px;line-height:1.5;margin-top:10px;padding:10px 12px;border-radius:8px;background:var(--bg3);border:1px solid var(--border2)}
+
 /* ============ IMPRESIÓN / PDF: apaisado, una hoja, colores para papel ============ */
-.print-title{display:none}
 @media print{
   @page{ size: landscape; margin: 8mm; }
   .no-print{ display:none !important; }
   body{ background:#fff !important; color:#000 !important; padding-bottom:0 }
   .header{ display:none !important; }
-  .print-title{ display:block; font-family:var(--sans); font-weight:700; font-size:14px; color:#000; margin-bottom:6px; }
   .main{ padding:0 !important; max-width:none !important; }
-  .tablewrap{ border:none !important; overflow:visible !important; max-width:none !important; }
+  .tablewrap{ border:none !important; overflow:visible !important; max-width:none !important; width:100% !important; min-width:0 !important; }
+  table.grid thead th, table.grid td.rubro-cell{ position:static !important; box-shadow:none !important; }
   table.grid{ font-size:7px !important; width:100%; }
   table.grid th, table.grid td{ padding:1.5px 3px !important; border-color:#ccc !important; }
   table.grid thead th{ color:#000 !important; background:#fff !important; }
@@ -148,6 +182,83 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
 .btn:hover{opacity:.9}
 .close-x{position:absolute;top:14px;right:16px;cursor:pointer;color:var(--text3);font-size:18px}
 .modal{position:relative}
+/* ============ VISTA DE IMPRESIÓN (PDF formato presentación) ============ */
+@page{ size: A4 landscape; margin: 8mm; }
+#printView{display:none;font-family:"Segoe UI",Helvetica,Arial,sans-serif;color:#1f1f1f;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printView *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+#printView.measuring{display:block;position:absolute;left:-99999px;top:0;width:1062px}
+@media print{
+  body.pv-printing{background:#fff !important;padding:0 !important}
+  body.pv-printing > *:not(#printView){display:none !important}
+  body.pv-printing #printView{display:block !important}
+}
+#printView .pv-page{width:1062px;background:#fff}
+#printView .pv-p2{page-break-before:always}
+#printView table.pv-hdr{width:100%;border-collapse:collapse;background:#1f1f1f;color:#fff}
+#printView .pv-hdr td{padding:13px 20px;vertical-align:middle}
+#printView .pv-hdr td.pv-hr{text-align:right}
+#printView .pv-brand{font-size:10px;letter-spacing:.2em;color:#f5c400;font-weight:700;text-transform:uppercase}
+#printView .pv-title{font-size:28px;font-weight:700;line-height:1.1;margin-top:3px}
+#printView .pv-chip{display:inline-block;padding:3px 14px;border-radius:13px;font-weight:700;font-size:13px}
+#printView .pv-period{font-size:15px;font-weight:600;margin-top:6px}
+#printView .pv-units{font-size:10px;color:#bdbdbd;margin-top:2px}
+#printView .pv-accent{height:5px;background:#f5c400}
+#printView .pv-kpiwrap{margin:11px -5px 9px -5px}
+#printView table.pv-kpis{width:100%;border-collapse:collapse;table-layout:fixed}
+#printView .pv-kpis td{padding:0 5px;vertical-align:top}
+#printView .pv-kpi{background:#f6f6f6;border-left:5px solid #888;padding:7px 11px 6px 11px;border-radius:3px}
+#printView .pv-k-a{border-left-color:#1f5c3a}
+#printView .pv-k-p{border-left-color:#8c2f39}
+#printView .pv-k-n{border-left-color:#f5c400;background:#fff8d9}
+#printView .pv-k-i{border-left-color:#3a3a3a}
+#printView .pv-kl{font-size:9px;text-transform:uppercase;letter-spacing:.06em;color:#6b6b6b;font-weight:700;white-space:nowrap}
+#printView .pv-kv{font-size:21px;font-weight:700;margin-top:2px;white-space:nowrap}
+#printView .pv-cur{font-size:13px;color:#888;font-weight:600}
+#printView .pv-kd{font-size:10px;margin-top:1px;white-space:nowrap;min-height:13px}
+#printView .pv-vs{color:#8a8a8a}
+#printView .pv-dgood{color:#1e8449;font-weight:700}
+#printView .pv-dbad{color:#c0392b;font-weight:700}
+#printView .pv-dflat{color:#8a8a8a}
+#printView .pv-cols{overflow:hidden}
+#printView .pv-col{float:left;width:49.2%}
+#printView .pv-col.r{float:right}
+#printView .pv-col.full{float:none;width:100%}
+#printView table.pv-tbl{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:10px;white-space:nowrap}
+#printView .pv-tbl td{padding:3px 7px;text-align:right;font-weight:400}
+#printView .pv-tbl td.pv-l{text-align:left;padding-left:12px}
+#printView .pv-bar td{color:#fff;font-weight:700;text-transform:uppercase;letter-spacing:.07em;font-size:10.5px;padding:5px 7px}
+#printView .pv-bar td.pv-l{padding-left:10px;font-size:11.5px;letter-spacing:.12em}
+#printView .pv-bar-a td{background:#1f5c3a}
+#printView .pv-bar-p td{background:#8c2f39}
+#printView .pv-bar-i td{background:#3a3a3a}
+#printView .pv-sub td{background:#f0f0f0;font-weight:700;color:#4a4a4a;font-size:9.5px;text-transform:uppercase;letter-spacing:.08em;text-align:left;padding:3px 10px}
+#printView .pv-row td{border-bottom:1px solid #e4e4e4}
+#printView .pv-row td.pv-l{color:#2b2b2b}
+#printView .pv-tot td{background:#e2efda;font-weight:700;border-top:1px solid #70ad47;border-bottom:1px solid #70ad47}
+#printView .pv-grand td{background:#c6e0b4;font-weight:700;font-size:12px;border-top:2px solid #1f5c3a;border-bottom:2px solid #1f5c3a;padding:4px 7px}
+#printView .pv-grand td.pv-l{padding-left:12px}
+#printView tr.pas.pv-tot td{background:#f6e3e5;border-top-color:#c0707a;border-bottom-color:#c0707a}
+#printView tr.pas.pv-grand td{background:#e8c3c8;border-top-color:#8c2f39;border-bottom-color:#8c2f39}
+#printView .pv-gap td{height:11px;padding:0;background:#fff;border:0}
+#printView .pv-pn td{background:#fff2b3;font-weight:700;font-size:12.5px;border-top:2px solid #f5c400;border-bottom:2px solid #f5c400;padding:5px 7px}
+#printView .pv-pn td.pv-l{padding-left:12px}
+#printView .pv-ratio td{border-bottom:1px solid #ece6c8;background:#fffbea}
+#printView .pv-ratio td.pv-l{font-weight:600;color:#2b2b2b}
+#printView .pv-ratio td{font-weight:700}
+#printView .pv-ratio td.pv-l{font-weight:600}
+#printView .neg{color:#c0392b}
+#printView .z{color:#b5b5b5}
+#printView .pv-foot{margin-top:6px;border-top:1px solid #dcdcdc;padding-top:5px;font-size:9px;color:#7a7a7a;overflow:hidden}
+#printView .pv-fr{float:right}
+#printView table.pv-an{width:100%;border-collapse:collapse;margin-top:12px}
+#printView .pv-an tr{page-break-inside:avoid}
+#printView .pv-am{width:120px;background:#1f5c3a;color:#fff;font-weight:700;font-size:15px;vertical-align:top;padding:12px 14px;border-bottom:3px solid #fff}
+#printView .pv-ac{padding:10px 16px;border-bottom:3px solid #fff;background:#f6f6f6;font-size:12px;line-height:1.5;vertical-align:top}
+#printView .pv-ac ul{margin:0;padding-left:0;list-style:none}
+#printView .pv-ac li{margin-bottom:3px}
+#printView .pv-note{margin-top:7px;padding:7px 10px;background:#fff8d9;border-left:4px solid #f5c400;font-size:11.5px}
+#printView .pv-none{color:#8a8a8a}
+
 </style>
 </head>
 <body>
@@ -155,7 +266,7 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
 <div class="header">
   <div class="eyebrow"><span class="pulse"></span> SPL / SPOTSLINE · SISTEMAS DE GESTIÓN</div>
   <h1>Situación Patrimonial</h1>
-  <div class="sub">Activo, Pasivo y ratios, mes a mes y por empresa. <span id="sync-status" style="opacity:.8"></span></div>
+  <div class="sub">Activo, Pasivo y ratios, mes a mes y por empresa. Los datos se guardan en este navegador.</div>
 </div>
 
 <div class="main">
@@ -170,6 +281,7 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
       <button class="btn" id="btnExportPdf"><i class="ti ti-file-type-pdf"></i> PDF</button>
       <button class="btn" id="btnExport"><i class="ti ti-download"></i> Backup (JSON)</button>
       <button class="btn" id="btnImportBackup"><i class="ti ti-upload"></i> Restaurar backup</button>
+      <button class="btn" id="btnPedidos"><i class="ti ti-bulb"></i> Pedidos de mejora <span id="pedidosCount" style="color:var(--yellow)"></span></button>
       <button class="btn" id="btnMeta"><i class="ti ti-info-circle"></i> Cómo se genera</button>
     </div>
   </div>
@@ -188,7 +300,7 @@ tr.rate-row .rubro-cell{font-style:italic;color:var(--text2);font-size:12px}
   <div id="calloutBox" class="no-print"></div>
   <div class="tablewrap" id="tableWrapEl"><table class="grid" id="gridTable"></table></div>
 </div>
-<div class="print-title" id="printTitle"></div>
+<div id="printView"></div>
 <div class="footer-note no-print" id="footerNote">—</div>
 
 <div class="overlay" id="overlay">
@@ -347,92 +459,26 @@ let cache = {}; // key -> {values:{}, meta:{}}
 
 function periodKey(entity, year, month){ return `sitpat:${entity}:${year}:${month}`; }
 
-/* ============ ALMACENAMIENTO: Supabase compartido (todo el equipo ve lo mismo,
-   y además alimenta el resumen que lee el Panel General) ============ */
-const SUPABASE_URL = 'https://ozbynorwhkmevjmftpmy.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_sBhFezk4bg0OPbSGG59jwA_bt1I1kpp';
-const SUPABASE_TABLE = 'patrimonial';
-const SUPABASE_ROW_ID = 'datos_v1';
-
-let remoteCache = {}; // key -> valor JSON (string), igual a lo que guardaba localStorage
-let remoteLoaded = false;
-let remoteLoadPromise = null;
-async function ensureRemoteLoaded(){
-  if(remoteLoaded) return;
-  if(!remoteLoadPromise){
-    remoteLoadPromise = (async ()=>{
-      try{
-        const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_ROW_ID}&select=valor`, {
-          headers:{ 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer '+SUPABASE_KEY }
-        });
-        if(res.ok){
-          const rows = await res.json();
-          const v = rows && rows[0] ? rows[0].valor : null;
-          if(v && v.datos) remoteCache = v.datos;
-        }
-      }catch(e){ console.error('Error cargando datos patrimoniales compartidos:', e); }
-      remoteLoaded = true;
-    })();
-  }
-  return remoteLoadPromise;
-}
-
-async function computeResumenActual(){
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
-  const spl = computeTotals((await effectiveMonthData('spl', year, month)).values);
-  const spotsline = computeTotals((await effectiveMonthData('spotsline', year, month)).values);
-  const todas = computeTotals((await effectiveMonthDataConjunto(year, month)).values);
-  return { anio:year, mes:month, spl, spotsline, todas };
-}
-
-let syncTimer = null;
-function scheduleSyncSupabase(){
-  clearTimeout(syncTimer);
-  syncTimer = setTimeout(syncSupabaseNow, 800);
-}
-async function syncSupabaseNow(){
-  const statusEl = document.getElementById('sync-status');
-  if(statusEl) statusEl.textContent = '⏳ Sincronizando…';
-  try{
-    const resumen = await computeResumenActual();
-    const payload = { resumen, datos: remoteCache };
-    const res = await fetch(`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?on_conflict=id`, {
-      method:'POST',
-      headers:{
-        'apikey': SUPABASE_KEY,
-        'Authorization': 'Bearer '+SUPABASE_KEY,
-        'Content-Type':'application/json',
-        'Prefer':'resolution=merge-duplicates,return=minimal'
-      },
-      body: JSON.stringify({ id: SUPABASE_ROW_ID, valor: payload, updated_at: new Date().toISOString() })
-    });
-    if(!res.ok){
-      const bodyText = await res.text().catch(()=> '');
-      throw new Error('HTTP '+res.status+' — '+bodyText);
-    }
-    if(statusEl) statusEl.textContent = '✓ Sincronizado con el equipo';
-  }catch(e){
-    console.error('Error sincronizando con Supabase:', e);
-    if(statusEl) statusEl.textContent = '⚠ No se pudo sincronizar';
-  }
-}
-
+/* ============ ALMACENAMIENTO: localStorage del navegador (persiste de verdad al abrir el archivo suelto) ============ */
+const LS_PREFIX = 'sitpat_ls:';
 const Store = {
   async get(key){
-    await ensureRemoteLoaded();
-    return remoteCache[key]!==undefined ? {value: remoteCache[key]} : null;
+    try{ const v = localStorage.getItem(LS_PREFIX+key); return v===null ? null : {value:v}; }
+    catch(e){ return null; }
   },
   async set(key, value){
-    await ensureRemoteLoaded();
-    remoteCache[key] = value;
-    scheduleSyncSupabase();
-    return true;
+    try{ localStorage.setItem(LS_PREFIX+key, value); return true; }
+    catch(e){ console.error('No se pudo guardar en localStorage', e); return false; }
   },
   async list(prefix){
-    await ensureRemoteLoaded();
-    return { keys: Object.keys(remoteCache).filter(k=>k.startsWith(prefix)) };
+    try{
+      const keys = [];
+      for(let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if(k && k.startsWith(LS_PREFIX+prefix)) keys.push(k.slice(LS_PREFIX.length));
+      }
+      return {keys};
+    }catch(e){ return {keys:[]}; }
   }
 };
 
@@ -707,20 +753,9 @@ async function renderGrid(monthsOverride){
   const firstM = visibleMonths[0];
 
   // Resumen automático: compara cada mes contra el anterior (aunque no esté visible) y arma los cambios relevantes.
-  const summaryTexts = {};
-  for(const m of visibleMonths){
-    const prevKey = m===0 ? {year: state.year-1, month: 11} : {year: state.year, month: m-1};
-    let prevData;
-    if(prevKey.year===state.year && monthData[prevKey.month]){
-      prevData = monthData[prevKey.month];
-    } else {
-      prevData = readonly ? await effectiveMonthDataConjunto(prevKey.year, prevKey.month) : await effectiveMonthData(state.entity, prevKey.year, prevKey.month);
-    }
-    const prevTotals = computeTotals(prevData.values);
-    summaryTexts[m] = computeDiffSummary(monthData[m].values, prevData.values, totalsByMonth[m], prevTotals);
-  }
+  const summaryTexts = await computeSummaryTexts(visibleMonths, monthData, totalsByMonth, readonly);
 
-  const headRow = `<tr><th class="rubro-hd">Rubro</th>${visibleMonths.map(m=>{
+  const headRow = `<tr><th class="rubro-hd"><span style="color:var(--yellow)">${entLabel}</span> · ${state.year}</th>${visibleMonths.map(m=>{
     if(readonly) return `<th>${MESES[m].slice(0,3)}</th>`;
     const frozen = monthData[m].frozen;
     return `<th><div class="month-hd"><span>${MESES[m].slice(0,3)}</span><button class="freeze-btn ${frozen?'is-frozen':''}" data-freeze-month="${m}" title="${frozen?'Mes congelado — click para descongelar':'Congelar este mes'}">${frozen?'🔒':'🔓'}</button></div></th>`;
@@ -940,7 +975,7 @@ async function renderAll(){
 /* ============ FILE UPLOAD MODAL ============ */
 let uploadCtx = null;
 
-function closeModal(){ document.getElementById('overlay').classList.remove('show'); uploadCtx = null; }
+function closeModal(){ document.getElementById('overlay').classList.remove('show'); document.getElementById('modal').style.width=''; uploadCtx = null; }
 
 function openUploadModal(fieldId){
   uploadCtx = {fieldId, rows:null, columns:null, month:new Date().getMonth()};
@@ -1986,99 +2021,465 @@ async function deleteDrillItem(fieldId, month, idx){
 }
 
 /* ============ EXPORTAR EXCEL / PDF (vista actual: empresa + año elegidos) ============ */
+const UNIT_LABELS = {pesos:'pesos', miles:'miles de pesos', millones:'millones de pesos'};
+let exportOpts = { pdf:{units:'miles', hideZeros:true}, excel:{units:'pesos', hideZeros:false} };
+
+// Resumen automático (vs. mes anterior) para una lista de meses; lo usan la grilla, el PDF y el Excel.
+async function computeSummaryTexts(months, monthData, totalsByMonth, readonly){
+  const out = {};
+  for(const m of months){
+    const prevKey = m===0 ? {year: state.year-1, month: 11} : {year: state.year, month: m-1};
+    let prevData;
+    if(prevKey.year===state.year && monthData[prevKey.month]){
+      prevData = monthData[prevKey.month];
+    } else {
+      prevData = readonly ? await effectiveMonthDataConjunto(prevKey.year, prevKey.month) : await effectiveMonthData(state.entity, prevKey.year, prevKey.month);
+    }
+    out[m] = computeDiffSummary(monthData[m].values, prevData.values, totalsByMonth[m], computeTotals(prevData.values));
+  }
+  return out;
+}
+
 async function gatherExportData(monthsOverride){
   const readonly = state.entity === 'conjunto';
-  const visibleMonths = monthsOverride || defaultVisibleMonths(state.year);
+  const visibleMonths = (monthsOverride || defaultVisibleMonths(state.year)).slice().sort((a,b)=>a-b);
   const monthData = {};
   for(const m of visibleMonths){
     monthData[m] = readonly ? await effectiveMonthDataConjunto(state.year, m) : await effectiveMonthData(state.entity, state.year, m);
   }
   const totalsByMonth = {};
   visibleMonths.forEach(m=> totalsByMonth[m] = computeTotals(monthData[m].values));
-  return {visibleMonths, monthData, totalsByMonth};
+  const summaryTexts = await computeSummaryTexts(visibleMonths, monthData, totalsByMonth, readonly);
+  return {visibleMonths, monthData, totalsByMonth, summaryTexts, readonly};
 }
 
-async function exportExcel(monthsOverride){
-  const {visibleMonths, monthData, totalsByMonth} = await gatherExportData(monthsOverride);
-  const entLabel = ENTITIES.find(e=>e.id===state.entity).label;
-  const aoa = [];
-  aoa.push([`Situación Patrimonial — ${entLabel} — ${state.year}`]);
-  aoa.push(['Rubro', ...visibleMonths.map(m=>MESES[m])]);
-  const field = (f)=> aoa.push([f.label, ...visibleMonths.map(m=> Math.round(monthData[m].values[f.id])||0)]);
-  const section = (label)=> aoa.push([label]);
-  const total = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> Math.round(totalsByMonth[m][key]))]);
-  const ratio = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> isFinite(totalsByMonth[m][key])?Number(totalsByMonth[m][key].toFixed(2)):'')]);
-  const pct = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> isFinite(totalsByMonth[m][key])?Number((totalsByMonth[m][key]*100).toFixed(1))+'%':'')]);
+// Modelo de filas único: lo usan el PDF y el Excel, así los dos muestran exactamente lo mismo.
+function buildReportModel(data, opts){
+  const months = data.visibleMonths, monthData = data.monthData, tot = data.totalsByMonth;
+  const vals = f => months.map(m=> Number(monthData[m].values[f.id])||0);
+  const rows = arr => arr.map(f=>({kind:'field', label:f.label, vals:vals(f)}))
+                         .filter(r=> !opts.hideZeros || r.vals.some(v=>Math.abs(v)>=0.5));
+  const T = (label,key,kind)=>({kind, label, vals: months.map(m=>tot[m][key])});
+  const R = (label,key,fmt,tip)=>({kind:'ratio', label, fmt, tip, vals: months.map(m=>tot[m][key])});
+  return {
+    months,
+    activo: [ {kind:'sub',label:'Corriente'}, ...rows(ACTIVO_CTE), T('Total Activo Corriente','totActCte','total'),
+              {kind:'sub',label:'No corriente'}, ...rows(ACTIVO_NOCTE), T('Total Activo No Corriente','totActNoCte','total'),
+              T('TOTAL ACTIVO','totActivo','grand') ],
+    pasivo: [ {kind:'sub',label:'Corriente'}, ...rows(PASIVO_CTE), T('Total Pasivo Corriente','totPasCte','total'),
+              {kind:'sub',label:'No corriente'}, ...rows(PASIVO_NOCTE), T('Total Pasivo No Corriente','totPasNoCte','total'),
+              T('TOTAL PASIVO','totPasivo','grand') ],
+    pn: T('PATRIMONIO NETO','patrimonioNeto','pn'),
+    ind: [ R('Liquidez Corriente','liquidez','x','AC / PC'),
+           R('Prueba Ácida','pruebaAcida','x','(AC − Bienes de Cambio) / PC'),
+           R('Endeudamiento','endeudamiento','x','Pasivo Total / Patrimonio Neto'),
+           R('Solvencia','solvencia','x','Activo Total / Pasivo Total'),
+           R('Cobertura del Pasivo con Patrimonio','coberturaPasPatrimonio','x','Patrimonio Neto / Pasivo Total'),
+           R('% Pasivo Corriente s/ Pasivo Total','pctPasCte','pct','PC / Pasivo Total'),
+           R('% Pasivo No Corriente s/ Pasivo Total','pctPasNoCte','pct','PNC / Pasivo Total'),
+           R('Capital de Trabajo','capitalTrabajo','money','AC − PC'),
+           {kind:'ratio', label:'Tipo de cambio oficial (BNA)', fmt:'tc', tip:'', vals: months.map(m=> Number(monthData[m].values.tipo_cambio)||0)} ]
+  };
+}
 
-  section('ACTIVO CORRIENTE'); ACTIVO_CTE.forEach(field); total('Total Activo Corriente','totActCte');
-  section('ACTIVO NO CORRIENTE'); ACTIVO_NOCTE.forEach(field); total('Total Activo No Corriente','totActNoCte');
-  total('TOTAL ACTIVO','totActivo');
-  section('PASIVO CORRIENTE'); PASIVO_CTE.forEach(field); total('Total Pasivo Corriente','totPasCte');
-  section('PASIVO NO CORRIENTE'); PASIVO_NOCTE.forEach(field); total('Total Pasivo No Corriente','totPasNoCte');
-  total('TOTAL PASIVO','totPasivo');
-  total('PATRIMONIO NETO','patrimonioNeto');
-  section('RATIOS');
-  ratio('Liquidez Corriente','liquidez'); ratio('Prueba Ácida','pruebaAcida'); ratio('Endeudamiento','endeudamiento');
-  ratio('Solvencia','solvencia'); ratio('Cobertura del Pasivo con Patrimonio','coberturaPasPatrimonio');
-  pct('% Pasivo Corriente s/ Pasivo Total','pctPasCte'); pct('% Pasivo No Corriente s/ Pasivo Total','pctPasNoCte');
-  total('Capital de Trabajo','capitalTrabajo');
-
-  const ws = XLSX.utils.aoa_to_sheet(aoa);
-  ws['!cols'] = [{wch:28}, ...visibleMonths.map(()=>({wch:14}))];
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, entLabel.slice(0,28));
-  const wbout = XLSX.write(wb, {type:'array', bookType:'xlsx'});
-  const blob = new Blob([wbout], {type:'application/octet-stream'});
+function htmlToPlain(s){
+  return String(s||'').replace(/<[^>]+>/g,'').replace(/&nbsp;/g,' ').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').trim();
+}
+function downloadBlob(blob, filename){
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a');
-  a.href = url; a.download = `situacion_patrimonial_${state.entity}_${state.year}.xlsx`;
+  a.href = url; a.download = filename;
   document.body.appendChild(a); a.click(); document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  setTimeout(()=> URL.revokeObjectURL(url), 1000);
 }
+function entityColor(){ return {spl:'2E86C1', spotsline:'7D5FD0', conjunto:'F5C400'}[state.entity] || '888888'; }
+function rangeText(months){ return months.length>1 ? `${MESES[months[0]]} – ${MESES[months[months.length-1]]}` : MESES[months[0]]; }
 
-async function exportPdf(){
-  openPdfMonthModal();
-}
+/* ---------- Selector de opciones (meses, unidades, etc.) para Excel y PDF ---------- */
+function exportExcel(){ openExportModal('excel'); }
+function exportPdf(){ openExportModal('pdf'); }
 
-function openPdfMonthModal(){
+function openExportModal(kind){
   const months = defaultVisibleMonths(state.year);
-  const entLabel = ENTITIES.find(e=>e.id===state.entity).label;
+  const ent = ENTITIES.find(e=>e.id===state.entity);
+  const o = exportOpts[kind];
+  const lbl = 'display:flex;align-items:center;gap:7px;font-size:13px;margin-bottom:8px;cursor:pointer';
   document.getElementById('modal').innerHTML = `
-    <span class="close-x" id="closeXPdf">&times;</span>
-    <h3>Exportar PDF — ${entLabel} ${state.year}</h3>
-    <div class="desc">Elegí qué meses van en el PDF (menos meses = más chance de que entre en una sola hoja apaisada).</div>
+    <span class="close-x" id="closeXExp">&times;</span>
+    <h3>${kind==='pdf' ? 'Exportar PDF' : 'Exportar Excel'} — ${ent.label} ${state.year}</h3>
+    <div class="desc">${kind==='pdf'
+      ? 'Sale en una hoja A4 apaisada, con formato de presentación (balance en dos columnas, indicadores destacados).'
+      : 'Sale con formato (colores, separador de miles, negativos en rojo), listo para presentar o imprimir.'} Elegí los meses:</div>
     <div style="display:flex;flex-wrap:wrap;gap:8px;margin:10px 0">
       ${months.map(m=>`<label style="display:flex;align-items:center;gap:5px;font-size:13px;background:var(--bg3);padding:6px 10px;border-radius:6px;cursor:pointer">
-        <input type="checkbox" class="pdf-month-chk" value="${m}" checked> ${MESES[m].slice(0,3)}
+        <input type="checkbox" class="exp-month-chk" value="${m}" checked> ${MESES[m].slice(0,3)}
       </label>`).join('')}
     </div>
-    <div style="display:flex;gap:10px;margin-bottom:10px">
-      <button class="btn" id="pdfSelAll" style="font-size:12px;padding:6px 10px">Todos</button>
-      <button class="btn" id="pdfSelNone" style="font-size:12px;padding:6px 10px">Ninguno</button>
+    <div style="display:flex;gap:10px;margin-bottom:14px">
+      <button class="btn" id="expSelAll" style="font-size:12px;padding:6px 10px">Todos</button>
+      <button class="btn" id="expSelNone" style="font-size:12px;padding:6px 10px">Ninguno</button>
     </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:5px">Mostrar valores en</div>
+    <select id="expUnits">
+      <option value="pesos" ${o.units==='pesos'?'selected':''}>Pesos</option>
+      <option value="miles" ${o.units==='miles'?'selected':''}>Miles de pesos</option>
+      <option value="millones" ${o.units==='millones'?'selected':''}>Millones de pesos</option>
+    </select>
+    <label style="${lbl}"><input type="checkbox" id="expHide" ${o.hideZeros?'checked':''}> Ocultar rubros sin valores en los meses elegidos</label>
+    <label style="${lbl}"><input type="checkbox" id="expAnalysis" ${commentsExpanded?'checked':''}> Incluir análisis del mes (resumen automático y notas)</label>
     <div class="modal-actions">
-      <button class="btn" id="cancelPdf">Cancelar</button>
-      <button class="btn primary" id="confirmPdf">Generar PDF</button>
+      <button class="btn" id="cancelExp">Cancelar</button>
+      <button class="btn primary" id="confirmExp">${kind==='pdf' ? 'Generar PDF' : 'Generar Excel'}</button>
     </div>
   `;
   document.getElementById('overlay').classList.add('show');
-  document.getElementById('closeXPdf').addEventListener('click', closeModal);
-  document.getElementById('cancelPdf').addEventListener('click', closeModal);
-  document.getElementById('pdfSelAll').addEventListener('click', ()=> document.querySelectorAll('.pdf-month-chk').forEach(c=>c.checked=true));
-  document.getElementById('pdfSelNone').addEventListener('click', ()=> document.querySelectorAll('.pdf-month-chk').forEach(c=>c.checked=false));
-  document.getElementById('confirmPdf').addEventListener('click', confirmPdfExport);
+  document.getElementById('closeXExp').addEventListener('click', closeModal);
+  document.getElementById('cancelExp').addEventListener('click', closeModal);
+  document.getElementById('expSelAll').addEventListener('click', ()=> document.querySelectorAll('.exp-month-chk').forEach(c=>c.checked=true));
+  document.getElementById('expSelNone').addEventListener('click', ()=> document.querySelectorAll('.exp-month-chk').forEach(c=>c.checked=false));
+  document.getElementById('confirmExp').addEventListener('click', ()=> confirmExport(kind));
 }
 
-async function confirmPdfExport(){
-  const selected = Array.from(document.querySelectorAll('.pdf-month-chk:checked')).map(c=>Number(c.value)).sort((a,b)=>a-b);
-  if(!selected.length){ alert('Elegí al menos un mes.'); return; }
+async function confirmExport(kind){
+  const months = Array.from(document.querySelectorAll('.exp-month-chk:checked')).map(c=>Number(c.value)).sort((a,b)=>a-b);
+  if(!months.length){ alert('Elegí al menos un mes.'); return; }
+  const opts = {
+    units: document.getElementById('expUnits').value,
+    hideZeros: document.getElementById('expHide').checked,
+    analysis: document.getElementById('expAnalysis').checked
+  };
+  exportOpts[kind] = {units: opts.units, hideZeros: opts.hideZeros}; // recuerda la última elección
   closeModal();
-  const entLabel = ENTITIES.find(e=>e.id===state.entity).label;
-  document.getElementById('printTitle').textContent = `Situación Patrimonial — ${entLabel} — ${state.year}`;
-  await renderGrid(selected); // pinta la grilla SOLO con los meses elegidos
-  window.print();
-  const restore = ()=>{ renderGrid(); window.removeEventListener('afterprint', restore); };
-  window.addEventListener('afterprint', restore);
+  const data = await gatherExportData(months);
+  const model = buildReportModel(data, opts);
+  if(kind==='pdf') await exportPdfPresentation(data, model, opts);
+  else await exportExcelStyled(data, model, opts);
+}
+
+/* ---------- EXCEL con formato (ExcelJS, se carga recién al exportar) ---------- */
+function loadScriptOnce(src){
+  return new Promise((res,rej)=>{
+    const s = document.createElement('script');
+    s.src = src; s.onload = ()=>res(); s.onerror = ()=>rej(new Error('No se pudo cargar '+src));
+    document.head.appendChild(s);
+  });
+}
+async function ensureExcelJS(){
+  if(window.ExcelJS) return true;
+  const urls = ['https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js','https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.4.0/exceljs.min.js'];
+  for(const u of urls){
+    try{ await loadScriptOnce(u); if(window.ExcelJS) return true; }catch(e){ /* prueba la siguiente */ }
+  }
+  return false;
+}
+
+async function exportExcelStyled(data, model, opts){
+  if(!(await ensureExcelJS())){
+    alert('No pude cargar el generador de Excel con formato (¿sin conexión a internet?). Te bajo una versión simple.');
+    return exportExcelBasic(data);
+  }
+  const ent = ENTITIES.find(e=>e.id===state.entity);
+  const months = model.months, nCols = months.length + 1;
+  const green = {dark:'FF548235', mid:'FF70AD47', grand:'FFC6E0B4', light:'FFE2EFDA'};
+  const NF = { pesos:'#,##0;[Red](#,##0);"–"', miles:'#,##0,;[Red](#,##0,);"–"', millones:'#,##0.0,,;[Red](#,##0.0,,);"–"' }[opts.units];
+  const NF_X = '0.00"x";[Red]-0.00"x"', NF_PCT = '0.0%;[Red]-0.0%', NF_TC = '#,##0.00;;"–"';
+  const solid = argb => ({type:'pattern', pattern:'solid', fgColor:{argb}});
+  const line = (style, argb) => ({style, color:{argb}});
+
+  const wb = new ExcelJS.Workbook();
+  wb.creator = 'Situación Patrimonial SPL / Spotsline'; wb.created = new Date();
+  const ws = wb.addWorksheet(`${ent.label} ${state.year}`, {
+    views:[{showGridLines:false, state:'frozen', xSplit:1, ySplit:4}],
+    pageSetup:{orientation: months.length<=5 ? 'portrait' : 'landscape', paperSize:9, fitToPage:true, fitToWidth:1,
+               fitToHeight: months.length<=5 ? 1 : 0, horizontalCentered:true,
+               margins:{left:0.4,right:0.4,top:0.5,bottom:0.5,header:0.25,footer:0.25}, printTitlesRow:'1:4'}
+  });
+  ws.headerFooter.oddFooter = '&L&8Situación Patrimonial SPL / Spotsline&C&8Página &P de &N&R&8&D';
+  const colW = {pesos:17, miles:14.5, millones:14.5}[opts.units]; // 14,5 alcanza para "SEPTIEMBRE" en negrita
+  ws.columns = [{width:42}, ...months.map(()=>({width:colW}))];
+
+  // Título y subtítulo
+  ws.addRow([`Situación Patrimonial · ${ent.label} · ${state.year}`]);
+  ws.addRow([`Meses: ${rangeText(months)}  ·  Valores en ${UNIT_LABELS[opts.units]}  ·  Generado el ${new Date().toLocaleDateString('es-AR')}`]);
+  ws.addRow([]);
+  ws.getRow(1).height = 30; ws.getRow(2).height = 16; ws.getRow(3).height = 6;
+  ws.getCell(1,1).font = {bold:true, size:16, color:{argb:'FF1F1F1F'}};
+  ws.getCell(1,1).alignment = {vertical:'middle'};
+  ws.getCell(2,1).font = {italic:true, size:9, color:{argb:'FF7F7F7F'}};
+  for(let c=1;c<=nCols;c++) ws.getCell(1,c).border = {bottom: line('medium', green.dark)};
+
+  // Encabezado de columnas (meses)
+  const hdr = ws.addRow(['Rubro', ...months.map(m=>MESES[m].toUpperCase())]);
+  hdr.height = 22;
+  for(let c=1;c<=nCols;c++){
+    const cell = hdr.getCell(c);
+    cell.fill = solid(green.light);
+    cell.font = {bold:true, size:11};
+    cell.alignment = {horizontal: c===1?'left':'center', vertical:'middle', indent: c===1?1:0};
+    cell.border = {top: line('thin', green.mid), bottom: line('medium', green.dark), left: line('thin', green.mid), right: line('thin', green.mid)};
+  }
+
+  const spacer = ()=>{ const r = ws.addRow([]); r.height = 8; };
+  const styleRow = (row, kind, cfg)=>{
+    for(let c=1;c<=nCols;c++){
+      const cell = row.getCell(c);
+      if(cfg.fill) cell.fill = solid(cfg.fill);
+      cell.font = Object.assign({size:10}, cfg.font||{});
+      if(cfg.top || cfg.bottom) cell.border = {top: cfg.top?line(cfg.top[0], cfg.top[1]):undefined, bottom: cfg.bottom?line(cfg.bottom[0], cfg.bottom[1]):undefined};
+      if(c===1) cell.alignment = {horizontal:'left', vertical:'middle', indent: cfg.indent||0};
+      else cell.alignment = {horizontal: cfg.center?'center':'right', vertical:'middle'};
+    }
+  };
+  const writeBar = (title)=>{
+    const row = ws.addRow([title]); row.height = 18;
+    styleRow(row,'bar',{fill:green.dark, font:{bold:true, color:{argb:'FFFFFFFF'}, size:10.5}});
+  };
+  const writeRows = (arr)=>{
+    arr.forEach(r=>{
+      if(r.kind==='sub'){
+        const row = ws.addRow([r.label]);
+        styleRow(row,'sub',{fill:'FFF2F2F2', font:{bold:true, color:{argb:'FF404040'}, size:10}});
+        return;
+      }
+      const isRatio = r.kind==='ratio';
+      const fmt = isRatio ? ({x:NF_X, pct:NF_PCT, money:NF, tc:NF_TC}[r.fmt]) : NF;
+      const cells = r.vals.map(v=>{
+        if(v===null || v===undefined || !isFinite(v)) return null;
+        return isRatio && r.fmt==='pct' ? v : Math.round(v*100)/100;
+      });
+      const row = ws.addRow([r.label, ...cells]);
+      const cfgs = {
+        field: {indent:1, bottom:['thin','FFD9D9D9']},
+        total: {fill:green.light, font:{bold:true}, top:['thin',green.mid], bottom:['thin',green.mid]},
+        grand: {fill:green.grand, font:{bold:true, size:11}, top:['medium',green.dark], bottom:['medium',green.dark]},
+        pn:    {fill:'FFFFE699', font:{bold:true, size:11}, top:['medium','FFBF9000'], bottom:['medium','FFBF9000']},
+        ratio: {fill:'FFFFF8E1', font:{bold:true}, bottom:['thin','FFE6D9A8']}
+      };
+      const cfg = cfgs[r.kind]; row.height = r.kind==='grand'||r.kind==='pn' ? 19 : 16;
+      styleRow(row, r.kind, cfg);
+      for(let c=2;c<=nCols;c++) row.getCell(c).numFmt = fmt;
+      if(isRatio){ row.getCell(1).font = {bold:true, size:10}; if(r.tip) row.getCell(1).note = 'Fórmula: '+r.tip; }
+    });
+  };
+
+  writeBar('ACTIVO'); writeRows(model.activo); spacer();
+  writeBar('PASIVO'); writeRows(model.pasivo); writeRows([model.pn]); spacer();
+  writeBar('INDICADORES'); writeRows(model.ind);
+
+  // Hoja de análisis (opcional)
+  if(opts.analysis){
+    const w2 = wb.addWorksheet('Análisis', {
+      views:[{showGridLines:false, state:'frozen', ySplit:3}],
+      pageSetup:{orientation:'landscape', paperSize:9, fitToPage:true, fitToWidth:1, fitToHeight:0, margins:{left:0.4,right:0.4,top:0.5,bottom:0.5,header:0.25,footer:0.25}}
+    });
+    w2.columns = [{width:14},{width:92},{width:56}];
+    w2.addRow([`Análisis del período · ${ent.label} · ${state.year}`]);
+    w2.addRow([]);
+    const h2 = w2.addRow(['Mes','Resumen automático (vs. mes anterior)','Notas']);
+    w2.getCell(1,1).font = {bold:true, size:14};
+    h2.eachCell(cell=>{ cell.fill = solid(green.light); cell.font = {bold:true}; cell.border = {bottom: line('medium', green.dark)}; });
+    months.forEach(m=>{
+      const lines = (data.summaryTexts[m]||[]).map(htmlToPlain);
+      const resumen = lines.length ? lines.join('\n') : 'Sin cambios relevantes vs. el mes anterior.';
+      const nota = (data.monthData[m].comentario||'').trim();
+      const row = w2.addRow([MESES[m], resumen, nota]);
+      const est = (txt,w)=> String(txt).split('\n').reduce((a,l)=> a + Math.max(1, Math.ceil(l.length/(w*1.05))), 0);
+      row.height = Math.min(400, Math.max(20, Math.max(est(resumen,92), est(nota,56))*13.5 + 8));
+      row.eachCell((cell,c)=>{
+        cell.alignment = {wrapText:true, vertical:'top'};
+        cell.border = {bottom: line('thin','FFD9D9D9')};
+        cell.font = c===1 ? {bold:true, size:11} : {size:10};
+      });
+    });
+  }
+
+  const buf = await wb.xlsx.writeBuffer();
+  downloadBlob(new Blob([buf], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'}),
+               `situacion_patrimonial_${state.entity}_${state.year}.xlsx`);
+}
+
+// Versión simple (sin formato), solo si no se pudo cargar ExcelJS
+function exportExcelBasic(data){
+  if(typeof XLSX==='undefined'){ alert('No pude cargar ninguna librería de Excel. Revisá tu conexión.'); return; }
+  const {visibleMonths, monthData, totalsByMonth} = data;
+  const ent = ENTITIES.find(e=>e.id===state.entity);
+  const aoa = [[`Situación Patrimonial — ${ent.label} — ${state.year}`], ['Rubro', ...visibleMonths.map(m=>MESES[m])]];
+  const field = f=> aoa.push([f.label, ...visibleMonths.map(m=> Math.round(monthData[m].values[f.id])||0)]);
+  const total = (label,key)=> aoa.push([label, ...visibleMonths.map(m=> Math.round(totalsByMonth[m][key]))]);
+  ACTIVO_CTE.forEach(field); total('Total Activo Corriente','totActCte'); ACTIVO_NOCTE.forEach(field); total('Total Activo No Corriente','totActNoCte'); total('TOTAL ACTIVO','totActivo');
+  PASIVO_CTE.forEach(field); total('Total Pasivo Corriente','totPasCte'); PASIVO_NOCTE.forEach(field); total('Total Pasivo No Corriente','totPasNoCte'); total('TOTAL PASIVO','totPasivo');
+  total('PATRIMONIO NETO','patrimonioNeto');
+  const ws = XLSX.utils.aoa_to_sheet(aoa);
+  ws['!cols'] = [{wch:34}, ...visibleMonths.map(()=>({wch:16}))];
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, ent.label.slice(0,28));
+  const wbout = XLSX.write(wb, {type:'array', bookType:'xlsx'});
+  downloadBlob(new Blob([wbout], {type:'application/octet-stream'}), `situacion_patrimonial_${state.entity}_${state.year}.xlsx`);
+}
+
+/* ---------- PDF formato presentación (vista de impresión propia, A4 apaisado) ---------- */
+const PV_W = 1062, PV_H = 715; // área útil A4 apaisado con márgenes de 8 mm, en px CSS (96 dpi)
+
+function pvMoney(n, units){
+  if(n===null || n===undefined || !isFinite(n)) return '<span class="z">–</span>';
+  const div = units==='millones' ? 1e6 : (units==='miles' ? 1e3 : 1);
+  const dec = units==='millones' ? 1 : 0;
+  const v = n/div;
+  if(Math.abs(v) < (dec ? 0.05 : 0.5)) return '<span class="z">–</span>';
+  const s = Math.abs(v).toLocaleString('es-AR', {minimumFractionDigits:dec, maximumFractionDigits:dec});
+  return v<0 ? `<span class="neg">(${s})</span>` : s;
+}
+function pvRatio(n, fmt, units){
+  if(fmt==='money') return pvMoney(n, units);
+  if(n===null || n===undefined || !isFinite(n)) return '<span class="z">–</span>';
+  if(fmt==='pct') return (n*100).toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1})+'%';
+  if(fmt==='tc') return n ? n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2}) : '<span class="z">–</span>';
+  const s = n.toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})+'x';
+  return n<0 ? `<span class="neg">${s}</span>` : s;
+}
+function pvDelta(curr, prev, fmt, invert){
+  if(prev===null || prev===undefined || !isFinite(prev) || !isFinite(curr)) return '&nbsp;';
+  const d = curr - prev;
+  const cls = good => good ? 'pv-dgood' : 'pv-dbad';
+  if(fmt==='x'){
+    if(Math.abs(d) < 0.005) return '<span class="pv-dflat">= sin cambio</span>';
+    return `<span class="${cls(invert ? d<0 : d>0)}">${d>0?'▲':'▼'} ${Math.abs(d).toLocaleString('es-AR',{minimumFractionDigits:2,maximumFractionDigits:2})}x</span>`;
+  }
+  if(Math.abs(prev) < 1) return '&nbsp;';
+  const pct = d/Math.abs(prev)*100;
+  if(Math.abs(pct) < 0.05) return '<span class="pv-dflat">= sin cambio</span>';
+  return `<span class="${cls(invert ? d<0 : d>0)}">${d>0?'▲':'▼'} ${Math.abs(pct).toLocaleString('es-AR',{minimumFractionDigits:1,maximumFractionDigits:1})}%</span>`;
+}
+
+function pvRows(title, barCls, tone, rowsArr, model, units){
+  const nM = model.months.length;
+  const bar = `<tr class="pv-bar ${barCls}"><td class="pv-l">${title}</td>${model.months.map(m=>`<td>${MESES[m].slice(0,3)}</td>`).join('')}</tr>`;
+  const body = rowsArr.map(r=>{
+    if(r.kind==='sub') return `<tr class="pv-sub"><td colspan="${nM+1}">${escHtml(r.label)}</td></tr>`;
+    const cls = {field:'pv-row', total:'pv-tot', grand:'pv-grand', pn:'pv-pn', ratio:'pv-ratio'}[r.kind] + (tone ? ' '+tone : '');
+    const cells = r.vals.map(v=> `<td>${r.kind==='ratio' ? pvRatio(v, r.fmt, units) : pvMoney(v, units)}</td>`).join('');
+    return `<tr class="${cls}"><td class="pv-l"${r.tip ? ` title="${escHtml(r.tip)}"` : ''}>${escHtml(r.label)}</td>${cells}</tr>`;
+  }).join('');
+  return bar + body;
+}
+function pvGap(model){ return `<tr class="pv-gap"><td colspan="${model.months.length+1}"></td></tr>`; }
+function pvTableOf(rowsHtml){ return `<table class="pv-tbl">${rowsHtml}</table>`; }
+
+function buildPrintPage1(data, model, opts, layout){
+  const ent = ENTITIES.find(e=>e.id===state.entity);
+  const months = model.months, units = opts.units;
+  const last = months[months.length-1], prev = months.length>1 ? months[months.length-2] : null;
+  const t = data.totalsByMonth;
+  const chipTxt = state.entity==='conjunto' ? '#1f1f1f' : '#ffffff';
+
+  const kp = [
+    {label:'Total Activo', k:'totActivo', fmt:'money', cls:'a'},
+    {label:'Total Pasivo', k:'totPasivo', fmt:'money', cls:'p', invert:true},
+    {label:'Patrimonio Neto', k:'patrimonioNeto', fmt:'money', cls:'n'},
+    {label:'Liquidez Corriente', k:'liquidez', fmt:'x', cls:'i'},
+    {label:'Endeudamiento', k:'endeudamiento', fmt:'x', cls:'i', invert:true}
+  ];
+  const kpis = kp.map(c=>{
+    const v = t[last][c.k];
+    const val = c.fmt==='money' ? `<span class="pv-cur">$</span> ${pvMoney(v, units)}` : pvRatio(v, 'x', units);
+    const dl = prev===null ? '&nbsp;' : pvDelta(v, t[prev][c.k], c.fmt, c.invert) + ` <span class="pv-vs">vs. ${MESES[prev].slice(0,3)}</span>`;
+    return `<td><div class="pv-kpi pv-k-${c.cls}"><div class="pv-kl">${c.label} · ${MESES[last].slice(0,3)}</div><div class="pv-kv">${val}</div><div class="pv-kd">${dl}</div></div></td>`;
+  }).join('');
+
+  const A = pvRows('ACTIVO','pv-bar-a','', model.activo, model, units);
+  const P = pvRows('PASIVO','pv-bar-p','pas', [...model.pasivo, model.pn], model, units);
+  const I = pvRows('INDICADORES','pv-bar-i','', model.ind, model, units);
+  const body = layout==='t'
+    ? `<div class="pv-cols"><div class="pv-col">${pvTableOf(A + pvGap(model) + I)}</div><div class="pv-col r">${pvTableOf(P)}</div></div>`
+    : `<div class="pv-cols"><div class="pv-col full">${pvTableOf(A + pvGap(model) + P + pvGap(model) + I)}</div></div>`;
+
+  return `
+  <div class="pv-page pv-p1">
+    <table class="pv-hdr"><tr>
+      <td><div class="pv-brand">SPL / Spotsline</div><div class="pv-title">Situación Patrimonial</div></td>
+      <td class="pv-hr"><span class="pv-chip" style="background:#${entityColor()};color:${chipTxt}">${ent.label}</span>
+        <div class="pv-period">${state.year} · ${rangeText(months)}</div>
+        <div class="pv-units">Valores en ${UNIT_LABELS[units]}</div></td>
+    </tr></table>
+    <div class="pv-accent"></div>
+    <div class="pv-kpiwrap"><table class="pv-kpis"><tr>${kpis}</tr></table></div>
+    ${body}
+    <div class="pv-foot"><span class="pv-fr">Generado el ${new Date().toLocaleDateString('es-AR')}</span>Fuente: Cash Flow, paneles de Cobranzas y Proveedores y planillas cargadas.</div>
+  </div>`;
+}
+
+function buildPrintAnalysis(data, model){
+  const ent = ENTITIES.find(e=>e.id===state.entity);
+  const rows = model.months.map(m=>{
+    const lines = data.summaryTexts[m] || [];
+    const bullets = lines.length ? `<ul>${lines.map(l=>`<li>${l}</li>`).join('')}</ul>` : '<div class="pv-none">Sin cambios relevantes vs. el mes anterior.</div>';
+    const note = (data.monthData[m].comentario||'').trim();
+    const noteHtml = note ? `<div class="pv-note"><b>Notas:</b> ${escHtml(note).replace(/\n/g,'<br>')}</div>` : '';
+    return `<tr><td class="pv-am">${MESES[m]}</td><td class="pv-ac">${bullets}${noteHtml}</td></tr>`;
+  }).join('');
+  return `
+  <div class="pv-page pv-p2">
+    <table class="pv-hdr"><tr>
+      <td><div class="pv-brand">SPL / Spotsline</div><div class="pv-title" style="font-size:20px">Análisis del período</div></td>
+      <td class="pv-hr"><span class="pv-chip" style="background:#${entityColor()};color:${state.entity==='conjunto'?'#1f1f1f':'#ffffff'}">${ent.label}</span><div class="pv-period">${state.year}</div></td>
+    </tr></table>
+    <div class="pv-accent"></div>
+    <table class="pv-an">${rows}</table>
+  </div>`;
+}
+
+function pvMeasure(root){
+  const page = root.querySelector('.pv-p1');
+  let needed = 0, avail = 0;
+  root.querySelectorAll('.pv-p1 .pv-col').forEach(c=>{
+    avail = Math.max(avail, c.clientWidth);
+    c.querySelectorAll('table.pv-tbl').forEach(tb=>{ needed = Math.max(needed, tb.offsetWidth); });
+  });
+  return {needed, avail, height: page ? page.offsetHeight : 0};
+}
+function pvScale(m){
+  const sW = (m.needed>0 && m.avail>0) ? Math.min(1, m.avail/m.needed) : 1;
+  const sH = (m.height>0) ? Math.min(1, PV_H/m.height) : 1;
+  return Math.min(sW, sH);
+}
+
+// Arma la vista de impresión, prueba las dos distribuciones (balance en dos columnas / una sola columna)
+// y se queda con la que entra más grande en una hoja.
+async function mountPrintView(data, model, opts){
+  const root = document.getElementById('printView');
+  root.className = 'measuring';
+  let layout = 't', scale = 1;
+  try{
+    root.innerHTML = buildPrintPage1(data, model, opts, 't');
+    const sT = pvScale(pvMeasure(root));
+    root.innerHTML = buildPrintPage1(data, model, opts, 's');
+    const sS = pvScale(pvMeasure(root));
+    layout = (sT >= sS - 0.02) ? 't' : 's';
+    scale = layout==='t' ? sT : sS;
+  }catch(e){ layout = 't'; scale = 1; }
+  root.innerHTML = buildPrintPage1(data, model, opts, layout) + (opts.analysis ? buildPrintAnalysis(data, model) : '');
+  const page = root.querySelector('.pv-p1');
+  if(scale < 0.999){ page.style.width = (PV_W/scale)+'px'; page.style.zoom = String(scale); }
+  root.className = '';
+  return {layout, scale};
+}
+
+async function exportPdfPresentation(data, model, opts){
+  const info = await mountPrintView(data, model, opts);
+  document.body.classList.add('pv-printing');
+  const cleanup = ()=>{
+    document.body.classList.remove('pv-printing');
+    document.getElementById('printView').innerHTML = '';
+    window.removeEventListener('afterprint', cleanup);
+    document.removeEventListener('click', cleanup);
+  };
+  window.addEventListener('afterprint', cleanup);
+  setTimeout(()=>{
+    window.print(); // en Chrome bloquea hasta que se cierra el diálogo
+    // red de seguridad por si el navegador no avisa al terminar de imprimir (se arma después, para no capturar el clic del botón)
+    setTimeout(()=> document.addEventListener('click', cleanup, {once:true}), 400);
+  }, 60);
+  return info;
 }
 
 
@@ -2151,9 +2552,251 @@ async function confirmBackupImport(){
     try{ await Store.set(k, v); cache[k] = JSON.parse(v); ok++; }
     catch(e){ fail++; }
   }
+  pedidosLoaded = false; await loadPedidos(); refreshPedidosBadge();
   closeModal();
   renderAll();
   alert(`Restaurado: ${ok} período(s)${fail?`, ${fail} con error`:''}.`);
+}
+
+/* ============ PEDIDOS DE MEJORA (bloc de notas para resolver juntos con Claude) ============ */
+const PEDIDOS_KEY = 'pedidos:mejoras';
+let pedidosData = {nextId:1, items:[]};
+let pedidosLoaded = false;
+let pedidosTab = 'abiertos';
+let pedidoDraft = {tipo:'Mejora', prioridad:'Normal', texto:''}; // borrador: sobrevive si cerrás el panel sin guardar
+
+function escHtml(s){
+  return String(s==null?'':s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function fmtFecha(iso){
+  try{ return new Date(iso).toLocaleDateString('es-AR',{day:'2-digit',month:'2-digit',year:'2-digit'}); }
+  catch(e){ return ''; }
+}
+async function loadPedidos(){
+  if(pedidosLoaded) return pedidosData;
+  try{
+    const r = await Store.get(PEDIDOS_KEY);
+    if(r){
+      const d = JSON.parse(r.value);
+      if(d && Array.isArray(d.items)){
+        const maxId = d.items.reduce((a,p)=>Math.max(a,p.id||0),0);
+        pedidosData = {nextId: Math.max(d.nextId||1, maxId+1), items: d.items};
+      }
+    }
+  }catch(e){ /* sin datos o ilegibles: arranca vacío */ }
+  pedidosLoaded = true;
+  return pedidosData;
+}
+async function savePedidos(){
+  await Store.set(PEDIDOS_KEY, JSON.stringify(pedidosData));
+  refreshPedidosBadge();
+}
+function refreshPedidosBadge(){
+  const n = pedidosData.items.filter(p=>p.estado==='abierto').length;
+  const el = document.getElementById('pedidosCount');
+  if(el) el.textContent = n ? `(${n})` : '';
+}
+function currentScreenLabel(){
+  const ent = ENTITIES.find(e=>e.id===state.entity).label;
+  return `${ent} · ${state.year}`;
+}
+
+async function openPedidosModal(){
+  await loadPedidos();
+  pedidosTab = 'abiertos';
+  document.getElementById('modal').style.width = '760px';
+  renderPedidosModal();
+  document.getElementById('overlay').classList.add('show');
+}
+
+function renderPedidosModal(focusText){
+  const items = pedidosData.items;
+  const abiertos = items.filter(p=>p.estado==='abierto');
+  const cerrados = items.filter(p=>p.estado==='cerrado');
+  const visibles = (pedidosTab==='abiertos' ? abiertos : pedidosTab==='cerrados' ? cerrados : items)
+    .slice().sort((a,b)=> b.id - a.id);
+  const opt = (arr, sel)=> arr.map(v=>`<option ${v===sel?'selected':''}>${v}</option>`).join('');
+  const itemHtml = p=>`
+    <div class="ped-item ${p.estado}">
+      <div class="ped-item-head">
+        <span class="ped-id">#${p.id}</span>
+        <span class="ped-badge ${p.tipo==='Error'?'error':''}">${escHtml(p.tipo)}</span>
+        <span class="ped-badge ${p.prioridad==='Alta'?'alta':(p.prioridad==='Baja'?'baja':'')}">${escHtml(p.prioridad)}</span>
+        <span class="ped-date">${fmtFecha(p.creado)}</span>
+        <span class="ped-item-actions">
+          <button class="ped-mini" data-ped-act="toggle" data-ped-id="${p.id}">${p.estado==='abierto'?'Cerrar':'Reabrir'}</button>
+          <button class="ped-mini" data-ped-act="del" data-ped-id="${p.id}" title="Borrar">🗑</button>
+        </span>
+      </div>
+      <div class="ped-item-text">${escHtml(p.texto)}</div>
+      <div class="ped-item-meta">Pantalla: ${escHtml(p.pantalla||'—')}</div>
+      ${p.estado==='cerrado' && p.cierreNota ? `<div class="ped-note">✔ ${escHtml(p.cierreNota)}${p.cerradoEn?` <span style="color:var(--text3)">(${fmtFecha(p.cerradoEn)})</span>`:''}</div>` : ''}
+    </div>`;
+
+  document.getElementById('modal').innerHTML = `
+    <div class="ped-head"><h3>Pedidos de mejora</h3><button class="ped-close" id="pedClose">Cerrar</button></div>
+    <div class="desc">Anotá acá lo que encuentres mientras usás el panel: errores, mejoras o ideas. Se guarda con la pantalla en la que estabas. Después tocá <b>Copiar pendientes</b> y pegalo en la conversación con Claude para resolverlos juntos.</div>
+    <div class="ped-row">
+      <div class="ped-field"><label>Tipo</label><select id="pedTipo" class="ped-select">${opt(['Mejora','Error','Idea','Duda'], pedidoDraft.tipo)}</select></div>
+      <div class="ped-field"><label>Prioridad</label><select id="pedPrio" class="ped-select">${opt(['Normal','Alta','Baja'], pedidoDraft.prioridad)}</select></div>
+    </div>
+    <div class="ped-field"><label>Qué pasa o qué necesitás</label>
+      <textarea id="pedTexto" class="ped-textarea" rows="4" placeholder="ej. en la lupa de Deudas bancarias quiero ver también el banco y la tasa de cada cuota">${escHtml(pedidoDraft.texto)}</textarea>
+    </div>
+    <div class="ped-screen">Pantalla: ${escHtml(currentScreenLabel())}</div>
+    <div class="ped-actions">
+      <button class="btn" id="pedCopy">Copiar pendientes (${abiertos.length})</button>
+      <button class="btn" id="pedPaste">Pegar respuesta de Claude</button>
+      <button class="btn primary" id="pedSave" style="margin-left:auto">Guardar pedido</button>
+    </div>
+    <div id="pedFallback"></div>
+    <div class="ped-listbox">
+      <div class="ped-tabs">
+        <button class="ped-tab ${pedidosTab==='abiertos'?'active':''}" data-ped-tab="abiertos">Abiertos (${abiertos.length})</button>
+        <button class="ped-tab ${pedidosTab==='cerrados'?'active':''}" data-ped-tab="cerrados">Cerrados (${cerrados.length})</button>
+        <button class="ped-tab ${pedidosTab==='todos'?'active':''}" data-ped-tab="todos">Todos</button>
+      </div>
+      ${visibles.length ? visibles.map(itemHtml).join('') : '<div class="ped-empty">No hay pedidos en esta vista.</div>'}
+    </div>`;
+
+  document.getElementById('pedClose').addEventListener('click', closeModal);
+  document.getElementById('pedTipo').addEventListener('change', e=>{ pedidoDraft.tipo = e.target.value; });
+  document.getElementById('pedPrio').addEventListener('change', e=>{ pedidoDraft.prioridad = e.target.value; });
+  const ta = document.getElementById('pedTexto');
+  ta.addEventListener('input', ()=>{ pedidoDraft.texto = ta.value; });
+  document.getElementById('pedSave').addEventListener('click', savePedidoFromDraft);
+  document.getElementById('pedCopy').addEventListener('click', copyPendientes);
+  document.getElementById('pedPaste').addEventListener('click', ()=> renderPedidosPaste());
+  document.querySelectorAll('[data-ped-tab]').forEach(b=> b.addEventListener('click', ()=>{ pedidosTab = b.dataset.pedTab; renderPedidosModal(); }));
+  document.querySelectorAll('[data-ped-act]').forEach(b=> b.addEventListener('click', ()=> pedidoAction(b.dataset.pedAct, Number(b.dataset.pedId))));
+  if(focusText) ta.focus();
+}
+
+async function savePedidoFromDraft(){
+  const texto = (pedidoDraft.texto||'').trim();
+  if(!texto){
+    const ta = document.getElementById('pedTexto');
+    ta.focus(); ta.style.borderColor = 'var(--red)';
+    setTimeout(()=>{ ta.style.borderColor = ''; }, 1200);
+    return;
+  }
+  pedidosData.items.push({
+    id: pedidosData.nextId++, tipo: pedidoDraft.tipo, prioridad: pedidoDraft.prioridad,
+    texto, pantalla: currentScreenLabel(), creado: new Date().toISOString(), estado: 'abierto'
+  });
+  pedidoDraft.texto = '';
+  pedidoDraft.prioridad = 'Normal';
+  pedidosTab = 'abiertos';
+  await savePedidos();
+  renderPedidosModal(true);
+}
+
+async function pedidoAction(act, id){
+  const p = pedidosData.items.find(x=>x.id===id);
+  if(!p) return;
+  if(act==='toggle'){
+    if(p.estado==='abierto'){ p.estado = 'cerrado'; p.cerradoEn = new Date().toISOString(); }
+    else { p.estado = 'abierto'; delete p.cerradoEn; delete p.cierreNota; }
+  } else if(act==='del'){
+    if(!confirm('¿Borrar el pedido #'+id+'?')) return;
+    pedidosData.items = pedidosData.items.filter(x=>x.id!==id);
+  }
+  await savePedidos();
+  renderPedidosModal();
+}
+
+function buildPendientesText(){
+  const abiertos = pedidosData.items.filter(p=>p.estado==='abierto').sort((a,b)=>a.id-b.id);
+  const L = [];
+  L.push(`Pedidos pendientes del panel "Situación Patrimonial SPL / Spotsline" (${abiertos.length}):`);
+  L.push('');
+  abiertos.forEach(p=>{
+    L.push(`#${p.id} [${p.tipo} · Prioridad ${p.prioridad}] · Pantalla: ${p.pantalla||'—'} · ${fmtFecha(p.creado)}`);
+    L.push(p.texto.trim());
+    L.push('');
+  });
+  L.push('Cuando resuelvas alguno, cerrá tu respuesta con una línea por cada pedido resuelto, con este formato exacto (así la pego en el panel y se cierran solos):');
+  L.push('RESUELTO #<número>: <qué se hizo, en una línea>');
+  return L.join('\n');
+}
+
+async function copyTextToClipboard(text){
+  try{
+    if(navigator.clipboard && window.isSecureContext){ await navigator.clipboard.writeText(text); return true; }
+  }catch(e){ /* sigue con el método alternativo */ }
+  try{
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.focus(); ta.select();
+    const ok = document.execCommand('copy');
+    document.body.removeChild(ta);
+    return !!ok;
+  }catch(e){ return false; }
+}
+function flashBtn(btn, msg){
+  const prev = btn.textContent;
+  btn.textContent = msg;
+  setTimeout(()=>{ if(btn.isConnected) btn.textContent = prev; }, 1500);
+}
+async function copyPendientes(){
+  const btn = document.getElementById('pedCopy');
+  const abiertos = pedidosData.items.filter(p=>p.estado==='abierto');
+  if(!abiertos.length){ flashBtn(btn, 'No hay pendientes'); return; }
+  const text = buildPendientesText();
+  const ok = await copyTextToClipboard(text);
+  if(ok){ flashBtn(btn, '¡Copiado!'); return; }
+  document.getElementById('pedFallback').innerHTML =
+    `<div class="desc" style="margin-top:0">No pude copiar automáticamente. Seleccioná todo el texto de abajo y copialo (Ctrl+C):</div>
+     <textarea id="pedFallbackTa" class="ped-textarea" rows="8" readonly style="margin-bottom:12px">${escHtml(text)}</textarea>`;
+  const t = document.getElementById('pedFallbackTa'); t.focus(); t.select();
+}
+
+function renderPedidosPaste(){
+  document.getElementById('modal').innerHTML = `
+    <div class="ped-head"><h3>Pegar respuesta de Claude</h3><button class="ped-close" id="pedBack">Volver</button></div>
+    <div class="desc">Pegá acá la respuesta de Claude. Busco las líneas que digan <b>RESUELTO #número: …</b> y cierro esos pedidos, guardando la nota que haya puesto.</div>
+    <textarea id="pedPasteText" class="ped-textarea" rows="9" placeholder="Pegá la respuesta completa de Claude…"></textarea>
+    <div class="ped-actions" style="margin-top:12px">
+      <button class="btn primary" id="pedApply" style="margin-left:auto">Cerrar los pedidos resueltos</button>
+    </div>
+    <div id="pedResult"></div>`;
+  document.getElementById('pedBack').addEventListener('click', ()=> renderPedidosModal());
+  document.getElementById('pedApply').addEventListener('click', applyPastedResponse);
+  document.getElementById('pedPasteText').focus();
+}
+
+// Acepta: "RESUELTO #3: nota", "Resuelto #3 y #5 - nota", "**RESUELTO #3:** nota", "- RESUELTO #3: nota"
+function parseResueltos(text){
+  const out = [];
+  String(text||'').split(/\r?\n/).forEach(line=>{
+    const m = line.match(/RESUELTOS?[\s*_`]*((?:#\d+)(?:\s*(?:,|y|e|&|\/)\s*#\d+)*)\s*[:\-–—]?\s*(.*)$/i);
+    if(!m) return;
+    const ids = (m[1].match(/\d+/g)||[]).map(Number);
+    const note = m[2].replace(/^[\s*_`:–—-]+/,'').replace(/[\s*_`]+$/,'').trim();
+    ids.forEach(id=> out.push({id, note}));
+  });
+  return out;
+}
+
+async function applyPastedResponse(){
+  const found = parseResueltos(document.getElementById('pedPasteText').value);
+  const res = document.getElementById('pedResult');
+  if(!found.length){
+    res.innerHTML = '<div class="ped-result">No encontré ninguna línea con el formato <b>RESUELTO #número: …</b> en lo que pegaste. Revisá que hayas copiado la respuesta completa de Claude.</div>';
+    return;
+  }
+  const cerrados = [], yaCerrados = [], noExiste = [];
+  found.forEach(({id, note})=>{
+    if(cerrados.includes(id)) return;
+    const p = pedidosData.items.find(x=>x.id===id);
+    if(!p){ if(!noExiste.includes(id)) noExiste.push(id); return; }
+    if(p.estado==='cerrado'){ if(!yaCerrados.includes(id)) yaCerrados.push(id); return; }
+    p.estado = 'cerrado'; p.cerradoEn = new Date().toISOString(); p.cierreNota = note || 'Resuelto';
+    cerrados.push(id);
+  });
+  if(cerrados.length) await savePedidos();
+  const fmt = a=> a.map(i=>'#'+i).join(', ');
+  res.innerHTML = `<div class="ped-result">${cerrados.length ? `✔ Cerré ${cerrados.length} pedido(s): <b>${fmt(cerrados)}</b>.` : 'No cerré ningún pedido.'}${yaCerrados.length ? `<br>Ya estaban cerrados: ${fmt(yaCerrados)}.` : ''}${noExiste.length ? `<br>No encontré en el panel: ${fmt(noExiste)}.` : ''}</div>`;
 }
 
 /* ============ INIT ============ */
@@ -2163,6 +2806,8 @@ document.getElementById('btnSyncPanels').addEventListener('click', openSyncPanel
 document.getElementById('btnSyncDolar').addEventListener('click', openSyncDolarModal);
 document.getElementById('btnExport').addEventListener('click', exportAllData);
 document.getElementById('btnImportBackup').addEventListener('click', openImportBackupModal);
+document.getElementById('btnPedidos').addEventListener('click', openPedidosModal);
+loadPedidos().then(refreshPedidosBadge);
 document.getElementById('btnExportExcel').addEventListener('click', exportExcel);
 document.getElementById('btnExportPdf').addEventListener('click', exportPdf);
 renderAll();
